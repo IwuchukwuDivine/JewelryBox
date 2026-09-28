@@ -128,18 +128,42 @@ export interface Address {
   line2?: string;
   city: string;
   state: string;
+  /** Lagos area, e.g. "Lekki". Required when `state` is Lagos — it prices
+      the dispatch rider. Ignored for every other state. */
+  area?: string;
   country: "NG";
   notes?: string;
 }
 
-/** `doorstep` — courier to the address. `pickup` — collect at the showroom. */
-export type DeliveryMethod = "doorstep" | "pickup";
+/**
+ * How a piece travels.
+ *
+ * Not a customer choice — the destination decides it. Lagos is covered by
+ * dispatch riders; every other state goes by air freight. Checkout therefore
+ * asks *where*, never *how*.
+ */
+export type DeliveryMethod = "dispatch" | "flight";
 
-/** Admin-managed groups of states, each with its own doorstep fee. */
-export interface DeliveryZone {
+/** Every dispatch row carries this as its state. */
+export const LAGOS = "Lagos";
+
+/**
+ * One admin-priced destination.
+ *
+ * `dispatch` rows are Lagos areas — Ikeja, Lekki, Ajah — because the rider
+ * fee depends on how far across the city the piece goes.
+ * `flight` rows are states, one air-freight fee each.
+ *
+ * A destination with no active row is simply one she has not priced yet:
+ * checkout still takes the order and tells the customer the fee will follow.
+ */
+export interface DeliveryRate {
   id: string;
+  mode: DeliveryMethod;
+  /** Lagos area for `dispatch`; state name for `flight`. */
   name: string;
-  states: string[];
+  /** Always `LAGOS` for dispatch rows; one of `NIGERIAN_STATES` for flight. */
+  state: string;
   fee_ngn: number;
   active: boolean;
   position: number;
@@ -147,18 +171,26 @@ export interface DeliveryZone {
 
 /** Everything checkout needs to price delivery. */
 export interface DeliveryOptions {
-  zones: DeliveryZone[];
-  /** Flat fee for showroom collection. Usually 0. */
-  pickup_fee_ngn: number;
+  /** Lagos areas, priced for dispatch riders. */
+  areas: DeliveryRate[];
+  /** States she flies to, one rate each. Never includes Lagos. */
+  states: DeliveryRate[];
 }
 
-/** The customer's resolved delivery choice, stored on the order. */
+/**
+ * The resolved destination, stored on the order.
+ *
+ * `fee_ngn` is null when she has not priced that destination — the order is
+ * still placed and the fee is communicated afterwards, the same way BGI
+ * handled an unquoted courier.
+ */
 export interface DeliverySelection {
   method: DeliveryMethod;
-  zone_id?: string;
-  /** Zone or pickup location name, persisted on the order. */
+  /** null when the destination is unpriced. */
+  rate_id: string | null;
+  /** Area or state name, persisted on the order. */
   label: string;
-  fee_ngn: number;
+  fee_ngn: number | null;
 }
 
 /* ── Payment & order status ──────────────────────────────────────────── */
@@ -220,9 +252,10 @@ export interface Order {
   items: OrderItem[];
   subtotal_ngn: number;
   delivery_method: DeliveryMethod;
-  /** Zone or pickup location display name. */
-  delivery_zone: string | null;
-  delivery_fee_ngn: number;
+  /** Lagos area or state name, as priced at checkout. */
+  delivery_destination: string;
+  /** null ⇒ destination not priced yet; the fee follows by email. */
+  delivery_fee_ngn: number | null;
   total_ngn: number;
   shipping_address: Address;
   payment_method: PaymentMethod;
@@ -272,12 +305,17 @@ export interface PaginatedProducts {
 
 export type ProductInput = Omit<Product, "id" | "created_at" | "variants">;
 export type VariantInput = Omit<ProductVariant, "id" | "product_id">;
-export type ZoneInput = Omit<DeliveryZone, "id">;
+export type RateInput = Omit<DeliveryRate, "id">;
 
 /** What the client sends to `place_order`. Note: no prices. */
 export interface PlaceOrderInput {
   items: { product_id: string; variant_id?: string; quantity: number }[];
   address: Address;
-  delivery: { method: DeliveryMethod; zone_id?: string };
+  /**
+   * Which priced destination applies. Omitted when she has not priced it —
+   * `place_order` then derives the method from the address state and leaves
+   * the fee null. The client never sends a fee.
+   */
+  delivery: { rate_id?: string };
   payment_method: PaymentMethod;
 }

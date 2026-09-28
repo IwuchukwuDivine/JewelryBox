@@ -11,8 +11,8 @@ import type {
   ProductInput,
   ProductVariant,
   VariantInput,
-  DeliveryZone,
-  ZoneInput,
+  DeliveryRate,
+  RateInput,
 } from "~/utils/types/shop";
 import type { Announcement } from "~/utils/types/announcement";
 import type { AdminAnalytics, AdminStats } from "~/utils/types/admin";
@@ -66,15 +66,16 @@ export interface WishlistRepository {
 /* ── Delivery ────────────────────────────────────────────────────────── */
 
 export interface DeliveryRepository {
+  /** Lagos areas and flight states, for the checkout selects. */
   options(): Promise<DeliveryOptions>;
   /**
-   * Resolve a state + method to a priced selection. Returns `null` when no
-   * active zone covers that state, which the UI shows as "we'll be in touch".
+   * Price a destination. Pass the address state, plus the chosen Lagos area
+   * when that state is Lagos.
+   *
+   * Returns `null` when she has not priced that destination yet — checkout
+   * shows "delivery quoted after you order" and still lets the order through.
    */
-  resolve(
-    state: string,
-    method: DeliverySelection["method"],
-  ): Promise<DeliverySelection | null>;
+  resolve(input: { state: string; area?: string }): Promise<DeliverySelection | null>;
 }
 
 /* ── Orders ──────────────────────────────────────────────────────────── */
@@ -164,11 +165,17 @@ export interface AdminOrdersRepository {
   advance(id: string, to: OrderStatus, note?: string): Promise<Order>;
 }
 
-export interface AdminZonesRepository {
-  list(): Promise<DeliveryZone[]>;
-  create(input: ZoneInput): Promise<DeliveryZone>;
-  update(id: string, input: Partial<ZoneInput>): Promise<DeliveryZone>;
+/**
+ * The delivery pricing table. She adds a row per Lagos area she dispatches to
+ * and a row per state she flies to, then edits fees as courier costs move.
+ */
+export interface AdminRatesRepository {
+  list(): Promise<DeliveryRate[]>;
+  create(input: RateInput): Promise<DeliveryRate>;
+  update(id: string, input: Partial<RateInput>): Promise<DeliveryRate>;
   remove(id: string): Promise<void>;
+  /** Bulk fee edit — the realistic way a courier price rise gets applied. */
+  updateFees(fees: { id: string; fee_ngn: number }[]): Promise<void>;
 }
 
 export interface AdminAnnouncementsRepository {

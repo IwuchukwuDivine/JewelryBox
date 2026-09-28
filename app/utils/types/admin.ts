@@ -1,4 +1,5 @@
 import type {
+  DeliveryMethod,
   ProductCategory,
   ProductTag,
   SpecPair,
@@ -9,7 +10,7 @@ import type {
  *
  * Numeric fields stay `string | number` while being edited, because inputs
  * emit strings. Pages coerce them when building the repository payloads
- * (`ProductInput`, `VariantInput`, `ZoneInput` in `types/shop.ts`).
+ * (`ProductInput`, `VariantInput`, `RateInput` in `types/shop.ts`).
  */
 
 export interface ProductDraft {
@@ -39,10 +40,15 @@ export interface VariantDraft {
   position: string | number;
 }
 
-export interface ZoneDraft {
+/**
+ * A row in the delivery pricing table. `mode` decides what `name` means:
+ * a Lagos area for `dispatch`, a state for `flight`.
+ */
+export interface RateDraft {
   id?: string;
+  mode: DeliveryMethod | "";
   name: string;
-  states: string[];
+  state: string;
   fee_ngn: string | number;
   active: boolean;
   position: string | number;

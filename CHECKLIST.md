@@ -94,15 +94,15 @@ Both lanes are unblocked. Everything below exists, typechecks and lints clean.
 **Do not redefine any of it in your lane** — import it.
 
 - [x] `app/utils/types/shop.ts` — `Product`, `ProductVariant`, `SpecPair`,
-      `CartLine`, `Address`, `DeliveryZone`, `DeliveryMethod`,
+      `CartLine`, `Address`, `DeliveryRate`, `DeliveryMethod`,
       `DeliverySelection`, `PaymentMethod`, `OrderStatus`, `Order`,
       `OrderItem`, `OrderStatusEvent`, `ProductFilters`, `PaginatedProducts`,
-      `ProductInput`/`VariantInput`/`ZoneInput`, `PlaceOrderInput`.
+      `ProductInput`/`VariantInput`/`RateInput`, `PlaceOrderInput`.
 - [x] `app/utils/types/api.ts` — **the seam between the lanes.** Repository
       interfaces for products, wishlist, delivery, orders, announcements, auth,
       addresses and all five admin repositories. Frontend mocks implement these;
       backend Supabase modules implement the same ones.
-- [x] `app/utils/types/admin.ts` — `ProductDraft`, `VariantDraft`, `ZoneDraft`,
+- [x] `app/utils/types/admin.ts` — `ProductDraft`, `VariantDraft`, `RateDraft`,
       `AdminStats`, `AdminAnalytics`, `RevenuePoint`, `TopProduct`.
 - [x] `app/utils/types/announcement.ts`, `app/utils/types/forms.ts`
       (`Rule` now lives here; `rules.ts` imports it).
@@ -113,7 +113,11 @@ Both lanes are unblocked. Everything below exists, typechecks and lints clean.
       `COLLECTIONS` (4 nav entries), `SORT_OPTIONS`, `FILTER_OPTIONS`,
       `UNDER_PRICE_NGN`, `LOW_STOCK_THRESHOLD`, `PRODUCTS_PER_PAGE`, lookups.
 - [x] `app/utils/constants/states.ts` — 37 states, copied from BGI.
-- [x] `app/utils/cartLineKey.ts`, `app/utils/productAvailability.ts`.
+- [x] `app/utils/constants/lagosAreas.ts` — 38 Lagos areas in 4 rider-cost
+      groups (Mainland, Island, Lekki–Epe, Outskirts). Seed for the admin
+      pricing table; live rates come from the database.
+- [x] `app/utils/cartLineKey.ts`, `app/utils/productAvailability.ts`,
+      `app/utils/deliveryMethodForState.ts`.
 - [x] `app/utils/formatPrice.ts` — `formatPrice` now returns `₦0` instead of
       an empty string, plus `formatDeliveryFee` (renders `Free` at zero).
 
@@ -126,8 +130,15 @@ Both lanes are unblocked. Everything below exists, typechecks and lints clean.
   (watches, rings, necklaces, earrings, bracelets); four nav collections
   (Watches, Jewelry, Moissanite, Gifts) where Moissanite and Gifts are
   tag-driven and cut across categories.
-- **Delivery is `doorstep | pickup`** — BGI's GUO/GIG park couriers do not fit
-  insured jewelry. Zone-based fees are unchanged.
+- **Delivery is `dispatch | flight`, and the customer never picks it.** Lagos
+  goes by dispatch rider, priced **per area**; every other state goes by air
+  freight, priced **per state**. Checkout asks *where*, then derives *how* via
+  `deliveryMethodForState()`. BGI's GUO/GIG park couriers and zone groupings
+  are gone — `delivery_zones` becomes `delivery_rates`, one row per priced
+  destination.
+- **An unpriced destination is not an error.** No active rate means the order
+  is still placed with `delivery_fee_ngn = null`, and the fee follows by
+  email — the same way BGI handled an unquoted GIG shipment.
 - **Availability is derived, never stored** — `productAvailability()` is the
   only place `in-stock` / `low-stock` / `made-to-order` / `sold` is decided.
 - **Prices are whole-naira integers.** No kobo, no floats, anywhere.
@@ -192,7 +203,10 @@ Mock data only. No Supabase import anywhere in this lane.
       only. No card, no Paystack, no Flutterwave.
 - [ ] `Order/BankTransferCard.vue` — account details, order number as reference,
       copy-to-clipboard (`app/utils/copy.ts` exists).
-- [ ] `Order/DeliveryMethodPicker.vue` — doorstep / park pickup, zone-driven fee.
+- [ ] `Order/DeliveryDestination.vue` — **not a method picker.** State select;
+      when the state is Lagos an area select appears; the resolved method and
+      fee are then *shown*, not chosen. Unpriced destination renders
+      "Delivery quoted after you order" and still allows checkout.
 - [ ] `/order/confirmed`, `/order/[id]` — `Order/Timeline.vue` and
       `Order/StatusBadge.vue` must render **both** lanes correctly.
 - [ ] `/track` — guest lookup by order number + email.
@@ -216,7 +230,11 @@ for figures and IDs.
       controls that only offer legal transitions for that order's payment method.
 - [ ] `/admin/products` + `/new` + `/[id]` — `ProductForm`, `VariantsEditor`,
       `ImageUploader` (drag-drop, reorder, `compressImage.ts` from BGI).
-- [ ] `/admin/delivery` — zones CRUD, `ZoneFormModal`, per-state fees.
+- [ ] `/admin/delivery` — two tables: **Lagos areas** (dispatch) and
+      **States** (flight), each a name + fee + active row. `RateFormModal`,
+      inline fee editing and a bulk fee update, since a courier price rise
+      moves many rows at once. Seed the area picker from
+      `constants/lagosAreas.ts`.
 - [ ] `/admin/announcements` — single-active banner.
 - [ ] `/admin/analytics` — revenue chart, status doughnut, top products. Port
       BGI's three chart components.
@@ -236,13 +254,18 @@ for figures and IDs.
         (movement, case size, material, water resistance, stone, cut, clarity),
         created_at. **No grams, no karat.**
   - [ ] `product_variants` — label, options jsonb, price_ngn, in_stock, position.
-  - [ ] `delivery_zones` — name, states[], fee_ngn, active, position.
-  - [ ] `site_settings` — key/value jsonb (bank details, pickup fee, contact).
+  - [ ] `delivery_rates` — mode `('dispatch','flight')`, name, state, fee_ngn,
+        active, position. A `dispatch` row is a Lagos area and must carry
+        `state = 'Lagos'`; a `flight` row is a state and must not. Enforce
+        both with a check constraint, and `unique (mode, name)`.
+  - [ ] `site_settings` — key/value jsonb (bank account details, contact
+        details, WhatsApp number).
   - [ ] `orders` — order_number, user_id, **status** check
         `('received','confirmed','shipped','delivered','cancelled')`,
         **payment_method** check `('bank_transfer','pay_on_delivery')`,
-        items jsonb, subtotal_ngn, delivery_method, delivery_zone,
-        delivery_fee_ngn, total_ngn, shipping_address jsonb, status_history jsonb,
+        items jsonb, delivery_method `('dispatch','flight')`,
+        delivery_destination (area or state name), delivery_fee_ngn **nullable**,
+        subtotal_ngn, total_ngn, shipping_address jsonb, status_history jsonb,
         paid_at, created_at.
   - [ ] `wishlists`, `announcements` (+ single-active trigger).
 - [ ] Constraint: `status = 'confirmed'` requires
@@ -252,10 +275,14 @@ for figures and IDs.
       payment method, sets `paid_at`, rejects illegal jumps. Admin only.
 - [ ] `place_order(p_items, p_address, p_delivery, p_payment)` — reprices every
       line server-side from `products`/`product_variants`, resolves the delivery
-      fee from `delivery_zones`, generates `JB-XXXXXX`, inserts at `received`.
+      fee from `delivery_rates`, generates `JB-XXXXXX`, inserts at `received`.
       Never trusts a client price.
+  - [ ] Derives `delivery_method` from the address state server-side — Lagos →
+        dispatch, anything else → flight — rather than trusting the client, and
+        rejects a `rate_id` whose state does not match the address.
+  - [ ] Accepts an order to an unpriced destination with a null fee.
 - [ ] `lookup_order(p_order_ref, p_email)` — guest tracking, `security definer`.
-- [ ] Full RLS: public read on products/variants/zones/settings/announcements;
+- [ ] Full RLS: public read on products/variants/rates/settings/announcements;
       own-row on profiles/orders/wishlists; admin write everywhere.
 - [ ] Storage bucket `product-images` + the 4 storage policies.
 - [ ] `supabase/seed.sql` — mirror `app/utils/mock/products.ts` exactly so the
@@ -278,8 +305,8 @@ for figures and IDs.
 ## Phase C · Client data layer
 
 - [ ] `app/composables/useSupabaseClient.ts`, `app/utils/supabase.ts`.
-- [ ] `app/utils/api/{shop,orders,admin,wishlist,announcements,locations}.ts` —
-      port BGI's structure.
+- [ ] `app/utils/api/{shop,orders,admin,wishlist,announcements,delivery}.ts` —
+      port BGI's structure, implementing the interfaces in `types/api.ts`.
 - [ ] Stores: `cart` (persisted), `wishlist`, `address`, `orders`, `app`.
       Port from BGI; drop `currency` and `rates`.
 - [ ] Real implementations of every Phase 0 composable.
@@ -303,10 +330,14 @@ BGI has none. Do not repeat that.
 
 - [ ] Vitest + `@nuxt/test-utils`.
 - [ ] Unit: `formatPrice`, `seoText` (60/155 caps), `cartLineKey`, `rules`,
-      delivery fee resolution, **order status transition validity for both lanes**.
+      **order status transition validity for both lanes**, and
+      `deliveryMethodForState` (Lagos in any casing → dispatch).
 - [ ] Component: `Order/Timeline` for both lanes, `PaymentMethodPicker`,
       `QuantityStepper`, `ProductForm` validation.
-- [ ] DB: `place_order` reprices when a client sends a tampered price;
+- [ ] DB: `place_order` picks the Lagos area fee for a Lagos address and the
+      state fee otherwise; rejects a `rate_id` from the wrong state; accepts an
+      unpriced destination with a null fee. `place_order` reprices when a
+      client sends a tampered price;
       `advance_order_status` rejects `received → shipped` on bank transfer and
       rejects `confirmed` entirely on pay-on-delivery; RLS denies cross-user
       order reads and non-admin writes.

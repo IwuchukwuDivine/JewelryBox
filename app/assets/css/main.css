@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BRAND THEME — fill in your palette per project.
+   The @theme block generates Tailwind utilities (bg-primary-500, etc.).
+   Semantic tokens (:root / .dark) are used in components via var(--x).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Primary · your brand color (fill in the full 50–950 scale) ── */
+  --color-primary-50: #f5f5f5;
+  --color-primary-100: #e8e8e8;
+  --color-primary-200: #d1d1d1;
+  --color-primary-300: #a8a8a8;
+  --color-primary-400: #7a7a7a;
+  --color-primary-500: #525252;
+  --color-primary-600: #444444;
+  --color-primary-700: #363636;
+  --color-primary-800: #282828;
+  --color-primary-900: #1c1c1c;
+  --color-primary-950: #111111;
+  --color-primary: #525252;
+
+  /* ── Secondary · your accent color ── */
+  --color-secondary-500: #737373;
+  --color-secondary: #737373;
+
+  /* ── Status colors ── */
+  --color-success: #10b981;
+  --color-error: #e03e3e;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+}
+
+/* ─── Light Mode · Semantic Tokens ─── */
+:root {
+  --font-family: sans-serif; /* swap for your custom font */
+  --right: env(safe-area-inset-right, 0px);
+  --top: env(safe-area-inset-top, 0px);
+  --left: env(safe-area-inset-left, 0px);
+  --bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Surfaces */
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-muted: #f8f8f8;
+  --surface-subtle: #f0f0f0;
+
+  /* Text */
+  --text-primary: #171717;
+  --text-secondary: #444444;
+  --text-muted: #8a8a8a;
+  --text-on-primary: #ffffff;
+  --text-on-secondary: #ffffff;
+
+  /* Borders & Rings */
+  --border-default: #e4e4e4;
+  --border-light: #efefef;
+  --ring-default: var(--color-primary);
+
+  /* Overlay */
+  --overlay-default: rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Dark Mode · Semantic Tokens ─── */
+.dark {
+  --surface: #111111;
+  --surface-elevated: #1a1a1a;
+  --surface-muted: #222222;
+  --surface-subtle: #2c2c2c;
+
+  --text-primary: #f5f5f5;
+  --text-secondary: #cccccc;
+  --text-muted: #8a8a8a;
+  --text-on-primary: #ffffff;
+  --text-on-secondary: #ffffff;
+
+  --border-default: #2c2c2c;
+  --border-light: #222222;
+
+  --overlay-default: rgba(0, 0, 0, 0.75);
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}
+
+/* Accessibility: hidden link that appears on keyboard focus */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0 0 0.5rem 0;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+}
+
+body::-webkit-scrollbar {
+    display: none !important;
+  }
+  ::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px;
+    display: none;
+  }
+
+body {
+  font-family: var(--font-family);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REUSABLE CLASSES — never repeat the same styles across components.
+   Extract shared styles here instead.
+   ═══════════════════════════════════════════════════════════════════════ */

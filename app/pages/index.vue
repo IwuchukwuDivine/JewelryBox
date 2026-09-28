@@ -1,39 +1,39 @@
 <template>
-  <div class="coming-soon">
-    <AppLogo variant="monogram" size="3.25rem" class="coming-soon__mark" />
-
-    <p class="caption coming-soon__eyebrow">Opening soon</p>
-
-    <h1 class="display-heading coming-soon__title">
-      A private collection of luxury wristwatches
-    </h1>
-
-    <hr class="hairline coming-soon__rule">
-
-    <p class="coming-soon__body">
-      The house is still being assembled. Exceptional timepieces, fine jewelry
-      and moissanite will be presented here shortly.
-    </p>
-
-    <p class="coming-soon__domain">JEWELRYBOX.NG</p>
-  </div>
+  <main class="home">
+    <HomeHero />
+    <HomeCategoryTiles />
+    <HomeFeaturedRail />
+    <HomeMoissaniteBand />
+    <HomeCuratedList />
+    <HomeTestimonial />
+    <HomeNewsletter />
+    <HomeRecentlyViewed />
+  </main>
 </template>
 
 <script setup lang="ts">
 import { SITE_TAGLINE } from "~/utils/constants/brand";
 
+/**
+ * The home page, in the prototype's order: hero → the lines → the watch edit →
+ * moissanite → curated edits → one customer line → the letter → what you have
+ * already seen.
+ *
+ * Every section that carries data resolves it on the server (`await
+ * suspense()`), so the first paint is complete and nothing reflows in after
+ * hydration.
+ */
 usePageSeo({
   title: "Luxury Wristwatches & Fine Jewelry",
   description:
-    "A private collection of luxury wristwatches, fine jewelry and moissanite. Certified pieces, insured delivery across Nigeria. Opening soon.",
+    "Luxury wristwatches, fine jewelry and moissanite, chosen for how they feel years later. Certified pieces, insured delivery across Nigeria.",
   path: "/",
   ogImage: {
     card: "Default",
     props: {
-      pill: "Opening soon",
-      title: SITE_TAGLINE,
-      description:
-        "Wristwatches, fine jewelry and moissanite. Certified, insured, delivered across Nigeria.",
+      pill: "SS·26 — Edit 01",
+      title: "Luxury, Worn Close.",
+      description: SITE_TAGLINE,
     },
   },
   // Organization + WebSite are site-wide facts: declare them once, here.
@@ -42,51 +42,9 @@ usePageSeo({
 </script>
 
 <style scoped>
-.coming-soon {
-  display: flex;
-  min-height: 100dvh;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem 1.5rem;
-  text-align: center;
-}
-
-.coming-soon__mark {
-  margin-bottom: 2.5rem;
-  color: var(--text-primary);
-}
-
-.coming-soon__eyebrow {
-  margin: 0 0 2rem;
-  color: var(--accent);
-}
-
-.coming-soon__title {
-  max-width: 32rem;
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  line-height: 1.1;
-}
-
-.coming-soon__rule {
-  width: 3rem;
-  margin: 2.25rem 0;
-}
-
-.coming-soon__body {
-  max-width: 26rem;
-  margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-.coming-soon__domain {
-  margin: 4rem 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.18em;
-  color: var(--text-muted);
+.home {
+  /* The footer opens with its own rule, so the page only needs the last
+     section's breathing room. */
+  padding-bottom: 8px;
 }
 </style>

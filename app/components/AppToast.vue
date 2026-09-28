@@ -1,87 +1,57 @@
 <template>
-  <div class="alert-panel-container">
+  <div class="toast-stack" role="status" aria-live="polite">
     <transition-group id="alert-sequence" name="alert" tag="ul">
-      <div
+      <li
         v-for="(notification, index) in toasts"
         :key="notification.id"
-        :class="[stackClass(index), toastMap[notification.type].classes]"
-        class="toast-card"
+        class="toast"
+        :class="stackClass(index)"
       >
-        <div
-          class="toast-accent"
-          :style="{ backgroundColor: toastMap[notification.type].accent }"
+        <span
+          class="toast__accent"
+          :style="{ background: STATUS_COLORS[notification.type] }"
+          aria-hidden="true"
         />
-        <div class="flex flex-1 items-center gap-3 px-4 py-3">
-          <component
-            :is="toastMap[notification.type].icon"
-            :color="toastMap[notification.type].accent"
-            :size="20"
-            :stroke-width="2.25"
-          />
-          <p class="flex-1 text-sm leading-snug line-clamp-3">
-            {{ notification.notification }}
-          </p>
-          <button
-            class="toast-close"
-            aria-label="Dismiss"
-            @click="removeToast(notification.id)"
-          >
-            <lucide-x :size="14" :stroke-width="2.5" />
-          </button>
-        </div>
-      </div>
+
+        <p class="toast__text">{{ notification.notification }}</p>
+
+        <button
+          type="button"
+          class="toast__close"
+          aria-label="Dismiss"
+          @click="removeToast(notification.id)"
+        >
+          <lucide-x :size="14" :stroke-width="1.5" />
+        </button>
+      </li>
     </transition-group>
   </div>
 </template>
 
 <script setup lang="ts">
-import { CircleX, AlertTriangle, Info, CircleCheck } from "lucide-vue-next";
 import { STATUS_COLORS } from "~/utils/constants/appData";
 
+/**
+ * Toasts. One card, one look: ink ground, paper type, entering on `jbRise` at
+ * `top: 68px` — clear of the header. The four types are carried by the 2px
+ * accent bar alone rather than by four different backgrounds, which is what
+ * the old Tailwind palettes did.
+ */
 const { removeToast, toasts } = useApp();
 
-const toastMap = {
-  success: {
-    accent: STATUS_COLORS.success,
-    icon: CircleCheck,
-    classes: "bg-green-50 text-green-900 ring-1 ring-green-200",
-  },
-  error: {
-    accent: STATUS_COLORS.error,
-    icon: CircleX,
-    classes: "bg-red-50 text-red-900 ring-1 ring-red-200",
-  },
-  warning: {
-    accent: STATUS_COLORS.warning,
-    icon: AlertTriangle,
-    classes: "bg-amber-50 text-amber-900 ring-1 ring-amber-200",
-  },
-  info: {
-    accent: STATUS_COLORS.info,
-    icon: Info,
-    classes: "bg-blue-50 text-blue-900 ring-1 ring-blue-200",
-  },
-} as const;
-
-const stackClasses = [
-  "z-30 scale-100 translate-y-0 opacity-100",
-  "z-20 scale-[0.92] -translate-y-1/4 opacity-90",
-  "z-10 scale-[0.84] -translate-y-1/2 opacity-75",
-] as const;
-
+/* Three cards deep, each one behind the last. Anything further is parked
+   off-stage; the store never holds more than three anyway. */
 const stackClass = (index: number) =>
-  index < stackClasses.length
-    ? stackClasses[index]
-    : "z-0 scale-75 -translate-y-3/4 opacity-0 pointer-events-none";
+  index < 3 ? `toast--depth-${index}` : "toast--depth-out";
 </script>
 
 <style scoped>
-.alert-panel-container {
+.toast-stack {
   position: fixed;
-  z-index: 1000;
-  top: 1.25rem;
+  top: calc(68px + var(--top));
   left: 50%;
-  width: min(26rem, calc(100vw - 2rem));
+  z-index: var(--z-toast);
+  width: min(400px, calc(100vw - 40px));
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -91,74 +61,120 @@ const stackClass = (index: number) =>
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.toast-card {
+.toast {
   position: relative;
   display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.06),
-    0 2px 4px -2px rgb(0 0 0 / 0.06);
-  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  border-radius: var(--radius-brand);
+  background: var(--text-primary);
+  color: var(--surface);
+  box-shadow: 0 8px 32px var(--overlay-scrim);
   pointer-events: auto;
   transform-origin: center top;
+  /* `backwards` only: a forwards fill would override the depth transform
+     below once a newer toast pushed this one back. The entry is the keyframe,
+     not a transition — and it is deliberately longer than the re-stack, so
+     <transition-group> measures the animation and waits on that. */
+  animation: jbRise var(--dur-reveal) var(--ease-brand) backwards;
   transition:
-    transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform var(--dur-hover) var(--ease-brand),
+    opacity var(--dur-hover) var(--ease-brand);
 }
 
-.toast-accent {
-  width: 4px;
-  flex-shrink: 0;
-  border-radius: 4px 0 0 4px;
+.toast__accent {
+  flex: 0 0 auto;
+  width: 2px;
+  height: 14px;
+  border-radius: var(--radius-brand);
 }
 
-.toast-close {
+.toast__text {
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.toast__close {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-  border-radius: 9999px;
-  opacity: 0.4;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-brand);
+  background: none;
+  color: inherit;
+  opacity: 0.5;
   cursor: pointer;
-  transition:
-    opacity 150ms ease,
-    background-color 150ms ease;
+  transition: opacity var(--dur-hover) var(--ease-brand);
 }
 
-.toast-close:hover {
+.toast__close:hover {
   opacity: 1;
-  background-color: var(--surface-subtle);
 }
 
-/* Transitions */
-.alert-enter-active {
-  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
+.toast__close:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ── Depth ─────────────────────────────────────────────────────────────── */
+.toast--depth-0 {
+  z-index: 3;
+  transform: none;
+  opacity: 1;
+}
+.toast--depth-1 {
+  z-index: 2;
+  transform: translateY(-25%) scale(0.92);
+  opacity: 0.9;
+}
+.toast--depth-2 {
+  z-index: 1;
+  transform: translateY(-50%) scale(0.84);
+  opacity: 0.75;
+}
+.toast--depth-out {
+  z-index: 0;
+  transform: translateY(-75%) scale(0.75);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Transitions ───────────────────────────────────────────────────────── */
+.alert-move {
+  transition: transform var(--dur-hover) var(--ease-brand);
 }
 
 .alert-leave-active {
   position: absolute;
   bottom: 0;
-  z-index: -100;
-  transition: all 300ms cubic-bezier(0.4, 0, 1, 1);
-}
-
-.alert-move {
-  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.alert-enter-from {
-  opacity: 0;
-  transform: translateY(-100%) scale(0.95);
+  z-index: -1;
+  transition:
+    transform var(--dur-hover) var(--ease-brand),
+    opacity var(--dur-hover) var(--ease-brand);
 }
 
 .alert-leave-to {
   opacity: 0;
-  transform: translateX(-30%) scale(0.9);
+  transform: translateY(-12px) scale(0.92);
 }
 </style>

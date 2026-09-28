@@ -27,9 +27,10 @@ tokens in `:root` / `.dark`. **Components reference the semantic layer only.**
 Literal hexes needed outside CSS (JSON-LD, the manifest, the Satori OG cards)
 come from `app/utils/constants/brand.ts`.
 
-Dark is the launch default but the site opens in the visitor's OS preference;
-`useTheme()` persists an explicit choice under `jb-theme`, and a critical inline
-script in `nuxt.config.ts` applies it before first paint.
+**Light is the launch default.** The OS preference is deliberately not consulted —
+a first-time visitor always gets ivory. `useTheme()` persists an explicit choice
+under `jb-theme`, and a critical inline script in `nuxt.config.ts` applies it
+before first paint.
 
 ## Fonts
 

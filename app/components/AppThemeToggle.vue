@@ -70,11 +70,17 @@ const { toggle } = useTheme();
   transform: none;
 }
 
-:global(html.dark) .theme-toggle__sun {
+/*
+ * The whole selector goes inside :global(), not just the ancestor.
+ * Written as `:global(html.dark) .theme-toggle__sun`, the Tailwind v4 / Vite
+ * CSS pipeline drops the descendant part and emits a bare `html.dark` rule —
+ * which rotated and hid the entire document rather than the icon.
+ */
+:global(html.dark .theme-toggle__sun) {
   opacity: 1;
   transform: none;
 }
-:global(html.dark) .theme-toggle__moon {
+:global(html.dark .theme-toggle__moon) {
   opacity: 0;
   transform: rotate(90deg) scale(0.5);
 }

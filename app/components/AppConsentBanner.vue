@@ -31,10 +31,16 @@ const { grantConsent, denyConsent, restoreStoredConsent, readStoredConsent } = u
 
 const visible = ref(false);
 
-/** No measurement ID configured means there is nothing to consent to. */
-const gtagEnabled = computed(
-  () => !!useRuntimeConfig().public.gtag?.id,
-);
+/**
+ * No measurement ID configured means there is nothing to consent to.
+ *
+ * `public.gtag` is narrowed locally because nuxt-gtag's runtime-config
+ * augmentation is not visible to the inline vue-tsc that `nuxt dev` runs,
+ * which otherwise reports `Property 'id' does not exist on type '{}'` and
+ * throws a full-page error overlay on every route.
+ */
+const gtagConfig = useRuntimeConfig().public.gtag as { id?: string } | undefined;
+const gtagEnabled = computed(() => Boolean(gtagConfig?.id));
 
 onMounted(() => {
   if (!gtagEnabled.value) return;

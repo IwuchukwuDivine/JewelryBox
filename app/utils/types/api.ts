@@ -31,6 +31,14 @@ import type { AdminAnalytics, AdminStats } from "~/utils/types/admin";
  *   · Every method returns a type from `types/shop.ts`. Nothing leaks a
  *     Supabase row, a PostgrestError, or a fetch Response.
  *   · A "not found" is `null`, never a throw. Real failures throw.
+ *   · A thrown error carries a stable machine code from
+ *     `constants/errorCodes.ts`, attached with `codedError()` and read with
+ *     `errorCode()`. The UI branches on the code and never on message text;
+ *     the human sentence lives in `message`, written once at the source.
+ *     Supabase side, that code comes from the Postgres exception's `hint`
+ *     (`raise exception '…' using hint = 'sold_out'`) or from GoTrue's own
+ *     `error_code` — never parsed out of prose. An error with no code means
+ *     "a genuine failure, say try again".
  *
  * If a signature has to change, change it here first and tell the other lane.
  */
@@ -110,6 +118,24 @@ export interface SessionUser {
   is_admin: boolean;
 }
 
+/**
+ * Result of a signup.
+ *
+ * Email confirmation is ON, so a new account does not get a session until the
+ * address is verified — `user` is null and `needsVerification` is true, and
+ * the caller routes to `/auth/otp-verification`. Both fields are returned
+ * rather than inferred so the UI never has to guess from a null.
+ *
+ * Phase 0 amendment (agreed with the user): `signUp()` previously returned
+ * `SessionUser`, which is only satisfiable with confirmations disabled.
+ */
+export interface SignUpResult {
+  user: SessionUser | null;
+  needsVerification: boolean;
+  /** Echoed back so the verification screen knows which address to confirm. */
+  email: string;
+}
+
 export interface AuthRepository {
   current(): Promise<SessionUser | null>;
   signIn(email: string, password: string): Promise<SessionUser>;
@@ -118,7 +144,11 @@ export interface AuthRepository {
     password: string;
     full_name: string;
     phone?: string;
-  }): Promise<SessionUser>;
+  }): Promise<SignUpResult>;
+  /** Exchange the emailed code for a session. Throws on a bad or expired code. */
+  verifyOtp(email: string, token: string): Promise<SessionUser>;
+  /** Re-send the code. Rate limited server-side. */
+  resendOtp(email: string): Promise<void>;
   signOut(): Promise<void>;
   requestPasswordReset(email: string): Promise<void>;
   resetPassword(password: string): Promise<void>;

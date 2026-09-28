@@ -18,7 +18,7 @@ app/
 ├── middleware/                 # Route middleware guards
 ├── pages/                      # File-based routing
 ├── plugins/                    # Nuxt plugins
-├── store/                      # Pinia stores
+├── stores/                      # Pinia stores
 └── utils/                      # Reusable utility functions
     ├── types/                  # TypeScript type definitions
     └── constants/              # App constants and static data
@@ -100,7 +100,7 @@ Common cases requiring `<ClientOnly>`:
 - Use `definePageMeta` for layout and middleware assignment.
 - Use `useSeoMeta` or `useHead` for SEO.
 
-## Store (`app/store/`) — Pinia
+## Store (`app/stores/`) — Pinia
 
 - **Always** use Composition API (setup) syntax with `defineStore`.
 - Use `storeToRefs()` for reactive state, destructure methods directly.

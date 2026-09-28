@@ -38,7 +38,8 @@ API** behind the same contracts. They meet at Phase F.
 | `lookup_order()` | Guest order tracking by order number + email. |
 | `delivery_zones`, `site_settings`, `wishlists`, `announcements` | As-is. |
 | Full RLS policy set (21 policies) | Same shape, same names. |
-| `server/utils/orderEmails.ts` (6 templates) | Rewrite copy for the new status flow. |
+| `server/utils/orderEmails.ts` | Hand-written inline-styled HTML strings — **not** Resend templates. 4 builders (customer/vendor × placed/status) over a `STATUS_COPY` map. Rewrite copy and brand tokens. |
+| `supabase/templates/*.html` + `[auth.email.template.*]` | Six branded auth emails, sent by **Supabase**, not Resend. |
 | `middleware/{auth,admin,guest,checkout}.ts`, `layouts/{admin,auth}.vue` | As-is. |
 | Admin pages: index, orders, products, delivery, announcements, analytics | As-is minus rates. |
 | `Admin/{ImageUploader,ProductForm,VariantsEditor,OrderDetailModal,ZoneFormModal,RevenueChart,StatusDoughnut,TopProductsBar}.vue` | Restyle to JewelryBox, keep behaviour. |
@@ -292,12 +293,30 @@ for figures and IDs.
 
 - [ ] `server/utils/supabase.ts`, `supabaseService.ts` — port from BGI.
 - [ ] `server/api/orders/notify.post.ts` — order placed → customer + vendor email.
-- [ ] `server/utils/orderEmails.ts` — six templates, rewritten for the new flow:
-      order received (transfer — with account details + reference),
-      order received (on delivery — amount due at the door),
-      payment confirmed, shipped, delivered, cancelled.
-- [ ] `server/utils/sendOrderEmails.ts` — Resend. The `resend:*` skills in this
-      repo cover deliverability and SPF/DKIM.
+- [ ] `server/utils/orderEmails.ts` — port BGI's structure: brand tokens as
+      consts, an `esc()` helper, partials (`itemRows`, `totalsRows`,
+      `addressBlock`, `button`), a `shell()` document wrapper, a
+      `STATUS_COPY: Record<OrderStatus, {subject, heading, body}>` map, and
+      four payload builders (customer/vendor × placed/status).
+      **Emails live in the repo as HTML, not as Resend-hosted templates** —
+      they interpolate order data and must be version-controlled with the code.
+  - [ ] Copy rewritten for the two lanes: a bank-transfer "received" email
+        carries the account details and the order number as reference; a
+        pay-on-delivery "received" email states the amount due at the door.
+  - [ ] `STATUS_COPY` keyed to the new statuses — `received`, `confirmed`,
+        `shipped`, `delivered`, `cancelled`. BGI's `pending`/`paid`/`processing`
+        keys do not exist here.
+- [ ] `server/utils/sendOrderEmails.ts` — BGI hits `https://api.resend.com/emails`
+      with a raw `fetch` and no SDK. **Decide first:** keep that, or use the
+      `resend` SDK for idempotency keys and typed errors. The `resend:*` skills
+      in this repo cover the trade-off, deliverability and SPF/DKIM.
+- [ ] `supabase/templates/{confirmation,recovery,invite,email_change,password_changed_notification}.html`
+      — branded auth emails sent by Supabase, not Resend. Wire via
+      `[auth.email.template.*]` in `config.toml`.
+      **Gotcha from BGI:** `[auth.email.template.*]` paths resolve from the
+      project root (`./supabase/templates/…`) while
+      `[auth.email.notification.*]` resolve from `./supabase/` (`./templates/…`).
+      That inconsistency is real — do not "fix" it.
 - [ ] Extend `server/api/__sitemap__/urls.ts` with published products and
       categories, `lastmod` from `updated_at`. The TODO is already in the file.
 - [ ] `server/api/contact.post.ts` — contact form → vendor email, rate limited.

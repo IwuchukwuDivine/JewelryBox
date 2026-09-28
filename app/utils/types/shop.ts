@@ -284,6 +284,15 @@ export type ProductFilter = "all" | "new" | "moissanite" | "in-stock" | "under";
 
 export interface ProductFilters {
   category?: ProductCategory;
+  /**
+   * Several categories at once — a nav collection such as Jewelry, which
+   * spans rings, necklaces, earrings and bracelets. `category` stays for the
+   * single-category case; when both are set, `category` wins.
+   *
+   * Phase 0 amendment: without this, a multi-category collection resolved to
+   * no filter at all and showed the entire catalogue.
+   */
+  categories?: ProductCategory[];
   tag?: ProductTag;
   search?: string;
   maxPrice?: number;

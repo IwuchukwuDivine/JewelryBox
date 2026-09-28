@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121010}
+a{color:inherit}a:hover{color:inherit;opacity:.8}
+[data-jb]{--bg:#121010;--surface:#1A1715;--elev:#221E1B;--text:#F3EEE6;--text2:#C9C0B4;--muted:#8C8378;--border:#2C2724;--accent:#C8A97E;--accent-h:#D9BE97;--on-accent:#171310;--success:#6FA07A;--error:#D26A67;--warning:#D2A15A}
+[data-jb][data-theme="light"]{--bg:#F6F1E8;--surface:#FBF8F2;--elev:#FFFFFF;--text:#1C1714;--text2:#4A423C;--muted:#6E645A;--border:#E3DBCF;--accent:#9C7A4B;--accent-h:#86673D;--on-accent:#FBF8F2;--success:#3F7A4C;--error:#B04543;--warning:#A67A2E}
+[data-jb][data-palette="cool"]{--bg:#0D0E10;--surface:#15171A;--elev:#1D2024;--text:#F2F3F4;--text2:#B9BDC2;--muted:#7E848B;--border:#262A2F;--accent:#BFC5CC;--accent-h:#D6DAE0;--on-accent:#0D0E10}
+[data-jb][data-palette="cool"][data-theme="light"]{--bg:#F4F4F2;--surface:#FAFAF8;--elev:#FFFFFF;--text:#14161A;--text2:#45494F;--muted:#656A71;--border:#DFE1E3;--accent:#6B7079;--accent-h:#565B63;--on-accent:#FAFAF8}
+[data-jb][data-palette="neutral"]{--bg:#111110;--surface:#191917;--elev:#21211E;--text:#EFECE6;--text2:#BFBBB2;--muted:#86827A;--border:#2A2A27;--accent:#9B3F3F;--accent-h:#B04A4A;--on-accent:#F6F1E8}
+[data-jb][data-palette="neutral"][data-theme="light"]{--bg:#F2EFE9;--surface:#F8F6F1;--elev:#FFFFFF;--text:#1A1918;--text2:#4B4946;--muted:#6A6862;--border:#DEDAD2;--accent:#7A2E2E;--accent-h:#642424;--on-accent:#F8F6F1}
+</style>
+</helmet>
+<div data-jb data-palette="{{ palette }}" data-theme="{{ theme }}" style="background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;min-height:100dvh;transition:background .6s ease,color .6s ease">
+<div style="max-width:1120px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:96px">
+
+<header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;border-bottom:1px solid var(--border);padding-bottom:24px">
+  <div>
+    <p style="margin:0 0 12px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">Brand Identity · v1</p>
+    <h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:clamp(36px,5vw,56px);line-height:1;letter-spacing:.01em">JewelryBox</h1>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+    <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Warm palette · selected</span>
+    <button onClick="{{ toggleTheme }}" style="font-family:inherit;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:2px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">{{ themeLabel }}</button>
+  </div>
+</header>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:48px">
+  <div>
+    <p style="margin:0 0 16px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">01 · Personality</p>
+    <p style="margin:0;font-family:Marcellus,serif;font-size:clamp(26px,3vw,36px);line-height:1.2;text-wrap:pretty">Luxury you can experience, not just purchase.</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.6;color:var(--text2)">
+    <p style="margin:0">JewelryBox speaks quietly and precisely. It never shouts a discount. It describes weight, light, and the moment a piece is first worn.</p>
+    <p style="margin:0">Voice: assured, tactile, editorial. Short sentences. Nouns over adjectives. The customer is addressed as a collector, not a shopper.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+      <sc-for list="{{ traits }}" as="t" hint-placeholder-count="6"><span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 10px;border:1px solid var(--border);border-radius:2px;color:var(--text)">{{ t }}</span></sc-for>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p style="margin:0 0 24px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">02 · Logo explorations</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;padding:20px">
+      <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">A · Monogram</span>
+      <div style="display:flex;justify-content:center;align-items:center;flex:1">
+        <div style="font-family:Marcellus,serif;font-size:120px;line-height:1;display:flex;align-items:baseline">
+          <span style="letter-spacing:-.18em;position:relative;top:10px">J</span><span>B</span>
+        </div>
+      </div>
+      <span style="font-size:12px;color:var(--text2)">Interlocking J and B. J descends below the baseline like a clasp hook.</span>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;padding:20px">
+      <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">B · The Box</span>
+      <div style="display:flex;justify-content:center;align-items:center;flex:1">
+        <div style="position:relative;width:104px;height:104px;border:1.5px solid var(--text)">
+          <div style="position:absolute;left:-1.5px;right:-1.5px;top:30px;height:1.5px;background:var(--text)"></div>
+          <div style="position:absolute;left:50%;top:22px;width:10px;height:10px;transform:translateX(-50%) rotate(45deg);background:var(--accent)"></div>
+        </div>
+      </div>
+      <span style="font-size:12px;color:var(--text2)">A lidded box with a single stone at the seam. Reads at 16px.</span>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;padding:20px">
+      <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">C · Wordmark</span>
+      <div style="display:flex;justify-content:center;align-items:center;flex:1">
+        <span style="font-family:Marcellus,serif;font-size:40px;letter-spacing:.02em">JewelryBox</span>
+      </div>
+      <span style="font-size:12px;color:var(--text2)">Marcellus, single weight. CamelCase keeps the two words as one object.</span>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;padding:20px">
+      <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">D · Lockup</span>
+      <div style="display:flex;justify-content:center;align-items:center;flex:1;flex-direction:column;gap:14px">
+        <div style="font-family:Marcellus,serif;font-size:44px;line-height:1;display:flex;align-items:baseline"><span style="letter-spacing:-.18em;position:relative;top:4px">J</span><span>B</span></div>
+        <span style="font-family:Marcellus,serif;font-size:22px;letter-spacing:.14em;text-transform:uppercase">JewelryBox</span>
+      </div>
+      <span style="font-size:12px;color:var(--text2)">Monogram over spaced capitals. Packaging, certificates, embossing.</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p style="margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">03 · Selected system</p>
+  <p style="margin:0 0 24px;max-width:640px;font-size:15px;line-height:1.6;color:var(--text2)">Primary: the wordmark (C). Symbol: the JB monogram (A), used alone on favicon, packaging, watermark and the loading state. The Box (B) is retired to avoid a second icon competing with the monogram.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+    <div style="background:#0B0A09;border:1px solid var(--border);border-radius:2px;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px"><span style="font-family:Marcellus,serif;font-size:28px;letter-spacing:.02em;color:#F3EEE6">JewelryBox</span><span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8C8378">White</span></div>
+    <div style="background:#F6F1E8;border:1px solid var(--border);border-radius:2px;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px"><span style="font-family:Marcellus,serif;font-size:28px;letter-spacing:.02em;color:#1C1714">JewelryBox</span><span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#857B71">Black</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px"><span style="font-family:Marcellus,serif;font-size:28px;letter-spacing:.02em;background:linear-gradient(100deg,var(--accent) 0%,var(--accent-h) 45%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;color:transparent">JewelryBox</span><span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Metallic</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;aspect-ratio:4/3;display:flex;justify-content:center;align-items:center;gap:20px">
+      <div style="width:32px;height:32px;border-radius:2px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:18px;line-height:1"><span style="letter-spacing:-.18em;position:relative;top:1px">J</span><span>B</span></div>
+      <div style="width:48px;height:48px;border-radius:50%;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:26px;line-height:1"><span style="letter-spacing:-.18em;position:relative;top:2px">J</span><span>B</span></div>
+      <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);writing-mode:vertical-rl">Favicon · Avatar</span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:16px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:32px;display:flex;flex-direction:column;gap:20px">
+      <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Clear space</span>
+      <div style="display:inline-flex;align-self:center;padding:28px;border:1px dashed var(--muted);position:relative">
+        <span style="font-family:Marcellus,serif;font-size:28px;letter-spacing:.02em">JewelryBox</span>
+        <span style="position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted);font-family:monospace">x</span>
+      </div>
+      <span style="font-size:12px;line-height:1.5;color:var(--text2)">x = cap height of the wordmark. Nothing enters the box. On photography, place only on quiet areas.</span>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:32px;display:flex;flex-direction:column;gap:20px">
+      <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Minimum size</span>
+      <div style="display:flex;align-items:baseline;gap:32px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-family:Marcellus,serif;font-size:14px;letter-spacing:.02em">JewelryBox</span><span style="font-size:10px;color:var(--muted);font-family:monospace">wordmark 96px</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-family:Marcellus,serif;font-size:16px;line-height:1"><span style="letter-spacing:-.18em">J</span>B</span><span style="font-size:10px;color:var(--muted);font-family:monospace">monogram 16px</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-family:Marcellus,serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase">JewelryBox</span><span style="font-size:10px;color:var(--muted);font-family:monospace">caps 80px · print 18mm</span></div>
+      </div>
+      <span style="font-size:12px;line-height:1.5;color:var(--text2)">Below these sizes, use the monogram alone. Emboss: blind or foil, never printed colour on packaging.</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p style="margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">04 · Colour · Warm</p>
+  <p style="margin:0 0 24px;max-width:640px;font-size:15px;line-height:1.6;color:var(--text2)">Ivory, champagne and espresso. Dark is the launch default; light is one toggle away. The accent appears only on stones, hairlines and the wordmark's metallic variant.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+    <sc-for list="{{ paletteDocs }}" as="pd" hint-placeholder-count="3">
+      <div style="border:1px solid var(--border);border-radius:2px;overflow:hidden;display:flex;flex-direction:column">
+        <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+          <span style="font-family:Marcellus,serif;font-size:20px">{{ pd.name }}</span>
+          <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ pd.mood }}</span>
+        </div>
+        <sc-for list="{{ pd.themes }}" as="th" hint-placeholder-count="2">
+          <div style="background:{{ th.bg }};color:{{ th.text }};padding:20px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:Marcellus,serif;font-size:16px">{{ th.label }}</span><span style="font-size:11px;font-family:monospace;opacity:.6">{{ th.bg }}</span></div>
+            <div style="display:flex;gap:4px">
+              <sc-for list="{{ th.swatches }}" as="s" hint-placeholder-count="8">
+                <div title="{{ s.name }}" style="flex:1;height:44px;border-radius:2px;background:{{ s.hex }};border:1px solid rgba(128,128,128,.25)"></div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-family:monospace;font-size:10.5px;line-height:1.7">
+              <sc-for list="{{ th.swatches }}" as="s" hint-placeholder-count="8"><span style="display:flex;justify-content:space-between;gap:8px"><span style="opacity:.7">{{ s.name }}</span><span>{{ s.hex }}</span></span></sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section>
+  <p style="margin:0 0 24px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">05 · Typography · Marcellus + Instrument Sans</p>
+  <div style="display:flex;flex-direction:column;border-top:1px solid var(--border)">
+    <sc-for list="{{ typeScale }}" as="ts" hint-placeholder-count="13">
+      <div style="display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:24px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--text)">{{ ts.name }}</span><span style="font-size:10.5px;font-family:monospace;color:var(--muted)">{{ ts.spec }}</span></div>
+        <span style="font-family:{{ ts.family }};font-size:{{ ts.size }};line-height:{{ ts.lh }};letter-spacing:{{ ts.ls }};text-transform:{{ ts.tt }};font-weight:{{ ts.fw }};font-variant-numeric:tabular-nums;overflow-wrap:anywhere">{{ ts.sample }}</span>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:48px">
+  <div>
+    <p style="margin:0 0 16px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">06 · Art direction</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="aspect-ratio:4/5;background:repeating-linear-gradient(135deg,var(--elev) 0 6px,var(--surface) 6px 12px);border:1px solid var(--border);display:flex;align-items:flex-end;padding:10px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&w=900&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><span style="position:relative;font-family:monospace;font-size:10px;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px">macro · watch crown, black bg</span></div>
+      <div style="aspect-ratio:4/5;background:repeating-linear-gradient(135deg,var(--elev) 0 6px,var(--surface) 6px 12px);border:1px solid var(--border);display:flex;align-items:flex-end;padding:10px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?auto=format&fit=crop&w=900&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><span style="position:relative;font-family:monospace;font-size:10px;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px">ring on skin · single hard light</span></div>
+      <div style="aspect-ratio:4/5;background:repeating-linear-gradient(135deg,var(--elev) 0 6px,var(--surface) 6px 12px);border:1px solid var(--border);display:flex;align-items:flex-end;padding:10px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=900&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><span style="position:relative;font-family:monospace;font-size:10px;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px">necklace on glass · reflection</span></div>
+      <div style="aspect-ratio:4/5;background:repeating-linear-gradient(135deg,var(--elev) 0 6px,var(--surface) 6px 12px);border:1px solid var(--border);display:flex;align-items:flex-end;padding:10px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><span style="position:relative;font-family:monospace;font-size:10px;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px">product · ivory sweep, soft shadow</span></div>
+    </div>
+  </div>
+  <div style="font-size:14px;line-height:1.7;color:var(--text2);display:flex;flex-direction:column;gap:10px">
+    <p style="margin:0"><strong style="color:var(--text);font-weight:500">Catalogue shots</strong> — 4:5, product centred at 70% width, ivory (light) or obsidian (dark) sweep, one soft shadow falling bottom-right. No drop shadows added in post.</p>
+    <p style="margin:0"><strong style="color:var(--text);font-weight:500">Editorial shots</strong> — 3:4 or 16:9, single hard key light, deep blacks, controlled specular highlights. Skin and fabric allowed; faces cropped or turned.</p>
+    <p style="margin:0"><strong style="color:var(--text);font-weight:500">Macro</strong> — 1:1, fill the frame with one detail: bezel teeth, prong, clasp, pavé. Focus falls off within the frame.</p>
+    <p style="margin:0"><strong style="color:var(--text);font-weight:500">Moissanite</strong> — shot on black with a moving light source so fire reads as colour, never on white.</p>
+    <p style="margin:0"><strong style="color:var(--text);font-weight:500">Never</strong> — lifestyle stock, coloured gels, busy props, more than one piece per frame unless a set.</p>
+  </div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:48px">
+  <div>
+    <p style="margin:0 0 16px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">07 · Motion</p>
+    <p style="margin:0;font-family:Marcellus,serif;font-size:clamp(26px,3vw,36px);line-height:1.2">Slow, deliberate, expensive.</p>
+  </div>
+  <div style="font-size:14px;line-height:1.7;color:var(--text2);display:flex;flex-direction:column;gap:8px">
+    <p style="margin:0"><span style="font-family:monospace;color:var(--text)">ease: cubic-bezier(.16,1,.3,1)</span> — every transition. Nothing bounces.</p>
+    <p style="margin:0"><span style="font-family:monospace;color:var(--text)">durations: 240 / 600 / 1200ms</span> — hover · reveal · hero.</p>
+    <p style="margin:0">Reveals: 24px rise + fade, staggered 80ms per line. Images scale 1.04 → 1 over 1.2s.</p>
+    <p style="margin:0">Page change: 400ms fade to bg, content enters from 16px below. Cart: slide from right, 600ms, backdrop 40%.</p>
+    <p style="margin:0">Loading: JB monogram, hairline draws around it once every 2s.</p>
+  </div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+  <div style="border:1px solid var(--border);border-radius:2px;padding:24px;display:flex;flex-direction:column;gap:16px;background:var(--surface)">
+    <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Buttons</span>
+    <button style="font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:16px 24px;border-radius:2px;border:none;background:var(--text);color:var(--bg);cursor:pointer">Add to Bag</button>
+    <button style="font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:15px 24px;border-radius:2px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer">Buy Now</button>
+    <span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);text-decoration:underline;text-underline-offset:6px;text-decoration-color:var(--accent)">View Piece →</span>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:2px;padding:24px;display:flex;flex-direction:column;gap:16px;background:var(--surface)">
+    <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Form</span>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Email</span><div style="border-bottom:1px solid var(--text2);padding:10px 0;font-size:15px;color:var(--text)">amara@example.com</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--error)">Phone</span><div style="border-bottom:1px solid var(--error);padding:10px 0;font-size:15px;color:var(--text)">0803 000</div><span style="font-size:12px;color:var(--error)">Enter an 11-digit Nigerian number.</span></div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:2px;padding:24px;display:flex;flex-direction:column;gap:16px;background:var(--surface)">
+    <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Price · status</span>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px">Meridian Automatic 40</span><span style="font-size:15px;font-variant-numeric:tabular-nums">₦1,850,000</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px">Solitaire 1.5ct</span><span style="display:flex;gap:8px;font-variant-numeric:tabular-nums"><span style="font-size:13px;color:var(--muted);text-decoration:line-through">₦420,000</span><span style="font-size:15px">₦365,000</span></span></div>
+    <div style="display:flex;gap:16px;font-size:12px"><span style="color:var(--success)">● In stock</span><span style="color:var(--warning)">● 2 left</span><span style="color:var(--muted)">● Made to order</span></div>
+  </div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'dark'|'light'&quot;,&quot;section&quot;:&quot;Brand&quot;}}">
+class Component extends DCLogic {
+  state = { theme: null, palette: null };
+  renderVals() {
+    const theme = this.state.theme ?? this.props.theme ?? 'dark';
+    const palette = 'warm';
+    const P = {
+      warm: { name: 'Warm', mood: 'Ivory · Champagne · Espresso',
+        dark: { bg: '#121010', surface: '#1A1715', elev: '#221E1B', text: '#F3EEE6', text2: '#C9C0B4', muted: '#8C8378', border: '#2C2724', accent: '#C8A97E' },
+        light: { bg: '#F6F1E8', surface: '#FBF8F2', elev: '#FFFFFF', text: '#1C1714', text2: '#4A423C', muted: '#6E645A', border: '#E3DBCF', accent: '#9C7A4B' } },
+      cool: { name: 'Cool', mood: 'Pearl · Graphite · Platinum',
+        dark: { bg: '#0D0E10', surface: '#15171A', elev: '#1D2024', text: '#F2F3F4', text2: '#B9BDC2', muted: '#7E848B', border: '#262A2F', accent: '#BFC5CC' },
+        light: { bg: '#F4F4F2', surface: '#FAFAF8', elev: '#FFFFFF', text: '#14161A', text2: '#45494F', muted: '#656A71', border: '#DFE1E3', accent: '#6B7079' } },
+      neutral: { name: 'Neutral', mood: 'Bone · Charcoal · Oxblood',
+        dark: { bg: '#111110', surface: '#191917', elev: '#21211E', text: '#EFECE6', text2: '#BFBBB2', muted: '#86827A', border: '#2A2A27', accent: '#9B3F3F' },
+        light: { bg: '#F2EFE9', surface: '#F8F6F1', elev: '#FFFFFF', text: '#1A1918', text2: '#4B4946', muted: '#6A6862', border: '#DEDAD2', accent: '#7A2E2E' } },
+    };
+    const sw = t => ['bg','surface','elev','text','text2','muted','border','accent'].map(k => ({ name: {bg:'Background',surface:'Surface',elev:'Elevated',text:'Text',text2:'Text 2',muted:'Muted',border:'Border',accent:'Accent'}[k], hex: t[k] }));
+    const paletteDocs = ['warm'].map(k => ({ name: P[k].name, mood: P[k].mood, themes: [
+      { label: 'Dark', bg: P[k].dark.bg, text: P[k].dark.text, swatches: sw(P[k].dark) },
+      { label: 'Light', bg: P[k].light.bg, text: P[k].light.text, swatches: sw(P[k].light) } ] }));
+    const palettes = Object.keys(P).map(k => ({ label: P[k].name, pick: () => this.setState({ palette: k }),
+      bg: k === palette ? 'var(--text)' : 'transparent', fg: k === palette ? 'var(--bg)' : 'var(--text2)' }));
+    const S = 'Marcellus, serif', U = "'Instrument Sans', sans-serif";
+    const typeScale = [
+      { name: 'Display XL', spec: 'Marcellus 72/1.0 · +0.01em', family: S, size: 'clamp(44px,6vw,72px)', lh: '1', ls: '.01em', tt: 'none', fw: 400, sample: 'Luxury, Worn Close.' },
+      { name: 'Display L', spec: 'Marcellus 56/1.05', family: S, size: 'clamp(36px,4.5vw,56px)', lh: '1.05', ls: '.01em', tt: 'none', fw: 400, sample: 'The Watch Edit' },
+      { name: 'H1', spec: 'Marcellus 40/1.1', family: S, size: '40px', lh: '1.1', ls: '0', tt: 'none', fw: 400, sample: 'Meridian Automatic 40' },
+      { name: 'H2', spec: 'Marcellus 30/1.2', family: S, size: '30px', lh: '1.2', ls: '0', tt: 'none', fw: 400, sample: 'Brilliance, by the numbers' },
+      { name: 'H3', spec: 'Marcellus 22/1.3', family: S, size: '22px', lh: '1.3', ls: '0', tt: 'none', fw: 400, sample: 'What you will receive' },
+      { name: 'H4', spec: 'Instrument Sans 500 · 17/1.4', family: U, size: '17px', lh: '1.4', ls: '0', tt: 'none', fw: 500, sample: 'Shipping & delivery' },
+      { name: 'Body L', spec: 'Instrument Sans 18/1.6', family: U, size: '18px', lh: '1.6', ls: '0', tt: 'none', fw: 400, sample: 'Every piece arrives in the JewelryBox case, sealed and certified.' },
+      { name: 'Body', spec: 'Instrument Sans 15/1.6', family: U, size: '15px', lh: '1.6', ls: '0', tt: 'none', fw: 400, sample: 'Delivered across Nigeria in 1–3 working days. Insured in transit.' },
+      { name: 'Body S', spec: 'Instrument Sans 13/1.5', family: U, size: '13px', lh: '1.5', ls: '0', tt: 'none', fw: 400, sample: 'Moissanite is graded on the same colour scale as diamond.' },
+      { name: 'Caption', spec: 'Instrument Sans 11/1.4 · +0.14em · caps', family: U, size: '11px', lh: '1.4', ls: '.14em', tt: 'uppercase', fw: 400, sample: 'Section 04 · Moissanite' },
+      { name: 'Navigation', spec: 'Instrument Sans 500 · 13 · +0.08em · caps', family: U, size: '13px', lh: '1', ls: '.08em', tt: 'uppercase', fw: 500, sample: 'Watches   Jewelry   Moissanite   Gifts' },
+      { name: 'Button', spec: 'Instrument Sans 500 · 12 · +0.14em · caps', family: U, size: '12px', lh: '1', ls: '.14em', tt: 'uppercase', fw: 500, sample: 'Add to Bag' },
+      { name: 'Price', spec: 'Instrument Sans 15 · tabular', family: U, size: '15px', lh: '1', ls: '0', tt: 'none', fw: 400, sample: '₦1,850,000' },
+    ];
+    return {
+      theme, palette, palettes, paletteDocs, typeScale,
+      themeLabel: theme === 'dark' ? 'Dark · switch to light' : 'Light · switch to dark',
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      traits: ['Precise', 'Tactile', 'Editorial', 'Assured', 'Intimate', 'Contemporary'],
+    };
+  }
+}
+</script>
+</body>
+</html>

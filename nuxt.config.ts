@@ -15,9 +15,31 @@ const SITE_KEYWORDS =
 const OG_IMAGE = `${SITE_URL}/og-default.png`;
 
 /** Obsidian — dark is the launch default, so it is the advertised theme colour. */
-const THEME_COLOR = "#121010";
+// Ivory: light is the default theme, so the browser chrome matches it.
+const THEME_COLOR = "#F6F1E8";
 
 const isProduction = process.env.NODE_ENV === "production";
+
+/* `vite.define` below inlines SITE_URL into the client bundle, so a production
+   build carries whatever NUXT_SITE_URL was set at build time — permanently, in
+   every canonical, og:url and JSON-LD @id. A developer's .env says
+   http://localhost:3000, which is correct for dev and catastrophic once
+   deployed. Fail the build rather than find out from Search Console.
+
+   Gated on the argv command, not on NODE_ENV alone: `nuxi prepare` and
+   `nuxi typecheck` both run with NODE_ENV=production, and they must stay green
+   against a local .env. Only `nuxt build` / `nuxt generate` bake the value in. */
+const isBundling = process.argv.some((a) => a === "build" || a === "generate");
+
+if (
+  isProduction &&
+  isBundling &&
+  /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:|\/|$)/.test(SITE_URL)
+) {
+  throw new Error(
+    `NUXT_SITE_URL is "${SITE_URL}" in a production build. Set it to the real origin (e.g. https://jewelrybox.ng) in the deployment environment.`,
+  );
+}
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -44,6 +66,9 @@ export default defineNuxtConfig({
   },
 
   app: {
+    // Page change · 400ms fade, content enters from 16px below.
+    // Classes live in main.css; the reduced-motion block flattens them.
+    pageTransition: { name: "page", mode: "out-in" },
     head: {
       title: SITE_NAME,
       titleTemplate: `%s | ${SITE_NAME}`,
@@ -92,7 +117,7 @@ export default defineNuxtConfig({
           // THEME_STORAGE_KEY in app/composables/useTheme.ts.
           key: "theme-init",
           tagPriority: "critical",
-          innerHTML: `(function(){try{var s=localStorage.getItem("jb-theme");if(s==="dark"||((s===null||s==="auto")&&window.matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})();`,
+          innerHTML: `(function(){try{if(localStorage.getItem("jb-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}})();`,
         },
         // Vercel Web Analytics + Speed Insights. Injected by Vercel at the
         // edge when the features are enabled on the project — the npm
@@ -246,16 +271,39 @@ export default defineNuxtConfig({
     },
   },
 
+  // ── Runtime config ──────────────────────────────────────────────────
+  // Anything under `public` reaches the client bundle; everything else is
+  // server-only. Mirror every key added here in .env.example.
+  //
+  // The Supabase URL and anon key appear in BOTH halves on purpose: the
+  // browser client needs them to carry the user's session into RLS, and the
+  // Nitro routes need them without going through `public`. The service-role
+  // key is server-only and must never move — it bypasses RLS entirely.
   runtimeConfig: {
-    // Server-only keys go here.
+    supabaseUrl: process.env.SUPABASE_URL || "",
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || "",
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+
+    // Transactional email (Resend). Unset in dev → sendOrderEmails logs and
+    // skips, so the order flow stays testable without an API key.
+    resendApiKey: process.env.RESEND_API_KEY || "",
+    fromEmail: process.env.FROM_EMAIL || "JewelryBox <orders@jewelrybox.ng>",
+    vendorEmail: process.env.VENDOR_EMAIL || "",
+
     public: {
       siteUrl: SITE_URL,
+      supabaseUrl: process.env.SUPABASE_URL || "",
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY || "",
     },
   },
 
   image: {
     quality: 80,
     format: ["webp", "jpg"],
+    // Mock catalogue photography is served from Unsplash while the frontend
+    // lane builds against fixtures. Drop this once real product images land
+    // in Supabase storage (Phase F).
+    domains: ["images.unsplash.com"],
     screens: {
       xs: 320,
       sm: 640,

@@ -1,7 +1,7 @@
-export type Rule = {
-  rule: (value: string | number) => boolean;
-  message: string;
-};
+// `Rule` is declared once in utils/types/forms.ts and auto-imported, so it is
+// deliberately not re-exported here — two exports of the same name make Nuxt
+// pick one and warn about the other.
+import type { Rule } from "~/utils/types/forms";
 
 export const requiredRules: Rule[] = [
   {

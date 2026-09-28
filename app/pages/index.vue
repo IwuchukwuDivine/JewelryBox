@@ -1,22 +1,44 @@
 <template>
-  <div class="flex min-h-dvh flex-col items-center justify-center gap-4 p-6">
-    <h1 class="text-2xl font-semibold">Nuxt Template</h1>
-    <p class="max-w-md text-center text-sm" style="color: var(--text-secondary)">
-      Start building — see the README for what each folder is for.
-    </p>
-    <button
-      class="cursor-pointer rounded-xl px-6 py-3 text-sm font-semibold"
-      style="background: var(--color-primary); color: var(--text-on-primary)"
-      @click="useToast('success', 'Toast system is working!')"
+  <div
+    class="flex min-h-dvh flex-col items-center justify-center px-6 py-20"
+    style="background: var(--surface); color: var(--text-primary)"
+  >
+    <p
+      class="mb-10 text-[0.7rem] font-medium tracking-[0.4em] uppercase"
+      style="color: var(--text-muted)"
     >
-      Test toast
-    </button>
+      Jewelry Box
+    </p>
+
+    <h1 class="max-w-lg text-center text-3xl font-semibold tracking-tight sm:text-4xl">
+      A private collection of luxury wristwatches
+    </h1>
+
+    <div
+      class="my-8 h-px w-12"
+      style="background: var(--border-default)"
+      aria-hidden="true"
+    />
+
+    <p
+      class="max-w-sm text-center text-sm leading-relaxed"
+      style="color: var(--text-secondary)"
+    >
+      The house is still being assembled. Exceptional timepieces will be presented here shortly.
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
+useHead({
+  htmlAttrs: {
+    class: "dark",
+  },
+});
+
 useSeoMeta({
-  title: "Home",
-  description: "",
+  title: "Jewelry Box",
+  description:
+    "A private collection of luxury wristwatches. The house is still being assembled — we open soon.",
 });
 </script>

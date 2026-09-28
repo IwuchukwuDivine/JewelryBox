@@ -2,89 +2,350 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════
-   BRAND THEME — fill in your palette per project.
-   The @theme block generates Tailwind utilities (bg-primary-500, etc.).
-   Semantic tokens (:root / .dark) are used in components via var(--x).
+   JEWELRYBOX — brand theme.
+
+   Values come from the approved design system (Claude Design project
+   "JewelryBox", file `Brand Identity.dc.html`, warm palette). Do not
+   invent colours here; the cool and neutral palettes were explored and
+   rejected.
+
+   Two layers:
+     @theme        immutable brand constants → Tailwind utilities
+     :root / .dark semantic tokens → what components actually reference
+
+   Fonts (Marcellus + Instrument Sans + IBM Plex Mono) are registered via
+   `fonts.families` in nuxt.config.ts. @nuxt/fonts emits the @font-face
+   rules and the preloads — never hand-write either here.
    ═══════════════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── Primary · your brand color (fill in the full 50–950 scale) ── */
-  --color-primary-50: #f5f5f5;
-  --color-primary-100: #e8e8e8;
-  --color-primary-200: #d1d1d1;
-  --color-primary-300: #a8a8a8;
-  --color-primary-400: #7a7a7a;
-  --color-primary-500: #525252;
-  --color-primary-600: #444444;
-  --color-primary-700: #363636;
-  --color-primary-800: #282828;
-  --color-primary-900: #1c1c1c;
-  --color-primary-950: #111111;
-  --color-primary: #525252;
+  /* ── Type ──────────────────────────────────────────────────────────
+     Marcellus for display, Instrument Sans for UI, IBM Plex Mono for
+     specs, prices and captions. No italics: the brand uses none. */
+  --font-display: "Marcellus", "Marcellus Fallback: Georgia",
+    "Marcellus Fallback: Times New Roman", Georgia, serif;
+  --font-body: "Instrument Sans", "Instrument Sans Fallback: Arial",
+    "Instrument Sans Fallback: Helvetica", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback: Courier New",
+    ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ── Secondary · your accent color ── */
-  --color-secondary-500: #737373;
-  --color-secondary: #737373;
+  /* ── Obsidian · the warm black the dark theme is built from ──────── */
+  --color-obsidian: #121010;
+  --color-obsidian-raised: #1a1715;
+  --color-obsidian-elevated: #221e1b;
+  --color-obsidian-line: #2c2724;
 
-  /* ── Status colors ── */
-  --color-success: #10b981;
-  --color-error: #e03e3e;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
+  /* ── Ivory · the warm paper the light theme is built from ────────── */
+  --color-ivory: #f6f1e8;
+  --color-ivory-raised: #fbf8f2;
+  --color-ivory-elevated: #ffffff;
+  --color-ivory-line: #e3dbcf;
+
+  /* ── Champagne · the only accent. Stones, hairlines, the metallic
+        wordmark. Never a background fill. ──────────────────────────── */
+  --color-champagne: #c8a97e;
+  --color-champagne-bright: #d9be97;
+  --color-champagne-deep: #9c7a4b;
+  --color-champagne-deeper: #86673d;
+
+  /* ── Bone · type on obsidian ─────────────────────────────────────── */
+  --color-bone: #f3eee6;
+  --color-bone-soft: #c9c0b4;
+  --color-bone-muted: #8c8378;
+
+  /* ── Ink · type on ivory ─────────────────────────────────────────── */
+  --color-ink: #1c1714;
+  --color-ink-soft: #4a423c;
+  --color-ink-muted: #6e645a;
+
+  /* ── Geometry · one radius, everywhere. 50% is for avatars only. ─── */
+  --radius-brand: 2px;
+
+  /* ── Motion · slow, deliberate, expensive. Nothing bounces. ──────── */
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ─── Light Mode · Semantic Tokens ─── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FALLBACK METRICS — generated, do not hand-edit.
+
+   Each face below makes a system font occupy exactly the space the real
+   face will, so nothing reflows when the web font swaps in. @nuxt/fonts
+   only emits these for its remote providers; ours are local, so they are
+   produced here instead:
+
+       node scripts/font-fallback-metrics.mjs
+
+   Re-run and paste whenever a face in public/fonts/og/ changes.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@font-face {
+  font-family: "Marcellus Fallback: Georgia";
+  src: local("Georgia");
+  size-adjust: 102.5192%;
+  ascent-override: 95.0184%;
+  descent-override: 27.291%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Marcellus Fallback: Times New Roman";
+  src: local("Times New Roman");
+  size-adjust: 112.5%;
+  ascent-override: 86.5885%;
+  descent-override: 24.8698%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Instrument Sans Fallback: Arial";
+  src: local("Arial");
+  size-adjust: 102.7365%;
+  ascent-override: 94.4163%;
+  descent-override: 24.3341%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Instrument Sans Fallback: Helvetica";
+  src: local("Helvetica");
+  size-adjust: 102.7365%;
+  ascent-override: 94.4163%;
+  descent-override: 24.3341%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono Fallback: Courier New";
+  src: local("Courier New");
+  size-adjust: 99.9837%;
+  ascent-override: 102.5167%;
+  descent-override: 27.5045%;
+  line-gap-override: 0%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Light · Ivory
+   ───────────────────────────────────────────────────────────────────── */
 :root {
-  --font-family: sans-serif; /* swap for your custom font */
-  --right: env(safe-area-inset-right, 0px);
+  color-scheme: light;
+  --color-scheme: light;
+
+  --font-family: var(--font-body);
+
+  /* Motion durations: hover · reveal · hero */
+  --dur-hover: 240ms;
+  --dur-reveal: 600ms;
+  --dur-hero: 1200ms;
+
+  /* Safe areas */
   --top: env(safe-area-inset-top, 0px);
-  --left: env(safe-area-inset-left, 0px);
+  --right: env(safe-area-inset-right, 0px);
   --bottom: env(safe-area-inset-bottom, 0px);
+  --left: env(safe-area-inset-left, 0px);
 
   /* Surfaces */
-  --surface: #ffffff;
-  --surface-elevated: #ffffff;
-  --surface-muted: #f8f8f8;
-  --surface-subtle: #f0f0f0;
+  --surface: var(--color-ivory);
+  --surface-muted: var(--color-ivory-raised);
+  --surface-subtle: var(--color-ivory-raised);
+  --surface-elevated: var(--color-ivory-elevated);
+  --glass: rgba(246, 241, 232, 0.78);
 
   /* Text */
-  --text-primary: #171717;
-  --text-secondary: #444444;
-  --text-muted: #8a8a8a;
-  --text-on-primary: #ffffff;
-  --text-on-secondary: #ffffff;
+  --text-primary: var(--color-ink);
+  --text-secondary: var(--color-ink-soft);
+  --text-muted: var(--color-ink-muted);
+  --text-on-primary: var(--color-ivory-raised);
+  --text-on-secondary: var(--color-ivory-raised);
 
-  /* Borders & Rings */
-  --border-default: #e4e4e4;
-  --border-light: #efefef;
-  --ring-default: var(--color-primary);
+  /* Accent. `--color-primary` is the template-wide name for it. */
+  --color-primary: var(--color-champagne-deep);
+  --accent: var(--color-champagne-deep);
+  --accent-hover: var(--color-champagne-deeper);
+  --on-accent: var(--color-ivory-raised);
 
-  /* Overlay */
-  --overlay-default: rgba(0, 0, 0, 0.5);
+  /* Lines & rings */
+  --border-default: var(--color-ivory-line);
+  --border-light: var(--color-ivory-raised);
+  --border-strong: rgba(28, 23, 20, 0.22);
+  --ring-default: var(--accent);
+
+  /* Status */
+  --color-success: #3f7a4c;
+  --color-error: #b04543;
+  --color-warning: #a67a2e;
+  --color-info: #4a5f7a;
+
+  --overlay-default: rgba(28, 23, 20, 0.45);
 }
 
-/* ─── Dark Mode · Semantic Tokens ─── */
+/* ─────────────────────────────────────────────────────────────────────
+   Dark · Obsidian — the launch default
+   ───────────────────────────────────────────────────────────────────── */
 .dark {
-  --surface: #111111;
-  --surface-elevated: #1a1a1a;
-  --surface-muted: #222222;
-  --surface-subtle: #2c2c2c;
+  color-scheme: dark;
+  --color-scheme: dark;
 
-  --text-primary: #f5f5f5;
-  --text-secondary: #cccccc;
-  --text-muted: #8a8a8a;
-  --text-on-primary: #ffffff;
-  --text-on-secondary: #ffffff;
+  --surface: var(--color-obsidian);
+  --surface-muted: var(--color-obsidian-raised);
+  --surface-subtle: var(--color-obsidian-raised);
+  --surface-elevated: var(--color-obsidian-elevated);
+  --glass: rgba(18, 16, 16, 0.72);
 
-  --border-default: #2c2c2c;
-  --border-light: #222222;
+  --text-primary: var(--color-bone);
+  --text-secondary: var(--color-bone-soft);
+  --text-muted: var(--color-bone-muted);
+  --text-on-primary: #171310;
+  --text-on-secondary: #171310;
 
-  --overlay-default: rgba(0, 0, 0, 0.75);
+  --color-primary: var(--color-champagne);
+  --accent: var(--color-champagne);
+  --accent-hover: var(--color-champagne-bright);
+  --on-accent: #171310;
+
+  --border-default: var(--color-obsidian-line);
+  --border-light: var(--color-obsidian-raised);
+  --border-strong: rgba(200, 169, 126, 0.26);
+  --ring-default: var(--accent);
+
+  --color-success: #6fa07a;
+  --color-error: #d26a67;
+  --color-warning: #d2a15a;
+  --color-info: #8fa3bd;
+
+  --overlay-default: rgba(10, 9, 8, 0.72);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html {
+  color-scheme: var(--color-scheme);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  overflow-x: clip;
+  font-family: var(--font-body);
+  font-weight: 400;
+  background: var(--surface);
+  color: var(--text-primary);
+  transition:
+    background-color var(--dur-hover) var(--ease-brand),
+    color var(--dur-hover) var(--ease-brand);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Hidden scrollbars — the design keeps chrome out of the frame. */
+body::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none !important;
+}
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REUSABLE CLASSES — never repeat these styles in a component.
+   Specs are verbatim from the design system's type scale.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Marcellus display type. Size is set by the caller. */
+.display-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+/* Caption · Instrument Sans 11/1.4 · +0.14em · caps */
+.caption {
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Navigation · Instrument Sans 500 · 13 · +0.08em · caps */
+.nav-link {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: opacity var(--dur-hover) var(--ease-brand);
+}
+.nav-link:hover {
+  opacity: 0.65;
+}
+
+/* Button · Instrument Sans 500 · 12 · +0.14em · caps */
+.btn-solid,
+.btn-outline {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: var(--radius-brand);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-hover) var(--ease-brand),
+    color var(--dur-hover) var(--ease-brand),
+    opacity var(--dur-hover) var(--ease-brand);
+}
+.btn-solid {
+  padding: 16px 24px;
+  border: none;
+  background: var(--text-primary);
+  color: var(--surface);
+}
+.btn-outline {
+  padding: 15px 24px;
+  border: 1px solid var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
+}
+.btn-solid:hover,
+.btn-outline:hover {
+  opacity: 0.82;
+}
+.btn-solid:disabled,
+.btn-outline:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Price · tabular figures so columns of naira align. */
+.price {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The 1px rule that separates almost everything in this design. */
+.hairline {
+  border: 0;
+  height: 1px;
+  background: var(--border-default);
 }
 
 /* Accessibility: hidden link that appears on keyboard focus */
@@ -97,11 +358,14 @@
   overflow: hidden;
   z-index: 9999;
   padding: 0.75rem 1.5rem;
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-  font-weight: 600;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-body);
+  font-weight: 500;
   font-size: 0.875rem;
-  border-radius: 0 0 0.5rem 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0 0 var(--radius-brand) 0;
   text-decoration: none;
 }
 
@@ -113,22 +377,16 @@
   height: auto;
 }
 
-body::-webkit-scrollbar {
-    display: none !important;
+/* The motion spec is deliberately slow; honour the OS opt-out. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  ::-webkit-scrollbar {
-    width: 0px !important;
-    height: 0px;
-    display: none;
+  html {
+    scroll-behavior: auto;
   }
-
-body {
-  font-family: var(--font-family);
-  background: var(--surface);
-  color: var(--text-primary);
 }
-
-/* ═══════════════════════════════════════════════════════════════════════
-   REUSABLE CLASSES — never repeat the same styles across components.
-   Extract shared styles here instead.
-   ═══════════════════════════════════════════════════════════════════════ */

@@ -1,12 +1,7 @@
-# Nuxt Starter Template
+# JewelryBox
 
-A reusable starter for new Nuxt projects — Nuxt 4 + TypeScript + Tailwind v4 + Pinia (persisted) + Vue Query + Lucide icons. Clone it, fill in the blanks, and start building.
-
-> **Want a PWA?** Use the [`pwa` branch](../../tree/pwa) instead — same template plus `@vite-pwa/nuxt`, a manifest ready to fill in, and icon generation via `npm run generate-pwa-assets`. When clicking **Use this template**, tick **Include all branches**, then `git checkout pwa` in your new repo.
-
-## Getting Started
-
-Click **Use this template** (top right on GitHub) to create your new project repo, then:
+A private collection of luxury wristwatches, fine jewelry and moissanite.
+Nuxt 4 · TypeScript · Tailwind v4 · Pinia · Supabase · SSR on Vercel.
 
 ```bash
 npm install
@@ -14,84 +9,88 @@ cp .env.example .env
 npm run dev
 ```
 
-## Fill In Per Project
+## Brand system
 
-1. **`package.json`** → change `name`
-2. **`nuxt.config.ts`** → fill in the empty `app.head` section (title, description, OG/Twitter tags, theme color), set the `devServer.port`, and add env vars to `runtimeConfig`
-3. **`app/assets/css/main.css`** → replace the placeholder palette in `@theme` and the semantic tokens (`:root` / `.dark`) with your brand colors
-4. **`.env.example`** → document the project's env vars, then `cp .env.example .env`
-5. **`public/`** → replace `favicon.ico`, add your logo and icons
-6. **Fonts** → drop `.ttf` files in `app/assets/fonts/`, uncomment the `fonts` block in `nuxt.config.ts`, and update `--font-family` in `main.css`
+The design system is the Claude Design project **JewelryBox** — `Brand Identity.dc.html`
+(tokens, type scale, motion) and `JewelryBox Prototype.dc.html` (screens). Treat those
+as the source of truth; do not invent colours or type sizes.
 
-## Folder Guide
+| | |
+|---|---|
+| Palette | Warm — obsidian `#121010` / ivory `#F6F1E8`, champagne accent `#C8A97E` |
+| Type | Marcellus (display) · Instrument Sans 400/500/600 (UI) · IBM Plex Mono 400/500 (specs, prices) |
+| Radius | `2px`, everywhere. `50%` for avatars only. |
+| Motion | `cubic-bezier(.16,1,.3,1)` · 240 / 600 / 1200ms. Nothing bounces. |
+
+Tokens live in `app/assets/css/main.css`: brand constants in `@theme`, semantic
+tokens in `:root` / `.dark`. **Components reference the semantic layer only.**
+Literal hexes needed outside CSS (JSON-LD, the manifest, the Satori OG cards)
+come from `app/utils/constants/brand.ts`.
+
+Dark is the launch default but the site opens in the visitor's OS preference;
+`useTheme()` persists an explicit choice under `jb-theme`, and a critical inline
+script in `nuxt.config.ts` applies it before first paint.
+
+## Fonts
+
+Two families per face, on purpose:
+
+- `public/fonts/v1/*.woff2` — what browsers download (177 KB for six faces)
+- `public/fonts/og/*.ttf` — Satori only; it cannot read WOFF2
+
+Both are declared in `nuxt.config.ts` → `fonts.families`. The OG families are
+never referenced by site CSS, so browsers never fetch them. `v1/` is versioned
+because `vercel.json` caches `/fonts/` for a year — move to `v2/` if a face changes.
+
+```bash
+npm run fonts:woff2    # public/fonts/og/*.ttf  →  public/fonts/v1/*.woff2
+npm run fonts:metrics  # regenerate the FALLBACK METRICS block in main.css
+npm run icons          # favicons, app icons and og-default.png from brand-assets/
+```
+
+## SEO
+
+Every indexable page calls `usePageSeo()` once — it handles the title (capped at
+60 chars), description, Open Graph, Twitter, the share card, the canonical and
+JSON-LD together.
+
+```ts
+usePageSeo({
+  title: "Watches",
+  description: "Automatic and quartz timepieces, certified and insured.",
+  path: "/watches",
+  ogImage: { card: "Collection", props: { pill: "The Watch Edit", count: 24 } },
+  jsonLd: collectionSchema({ ... }),
+});
+```
+
+Share cards are Vue components rendered by Satori in `app/components/OgImage/`:
+`Default`, `Collection`, `Product`, `Campaign`. Satori resolves no CSS variables,
+needs `display: flex` on anything with more than one child, has no `line-clamp`,
+and ignores the `inset` shorthand — each file documents this.
+
+Sitemap URLs come from `server/api/__sitemap__/urls.ts` at runtime, so catalogue
+changes appear without a redeploy. Private routes are excluded in three places:
+that endpoint, `sitemap.exclude`, and `public/robots.txt`.
+
+**Search Console** is not yet verified — do it by DNS TXT on the Vercel domain, or
+drop the `google*.html` token file into `public/`.
+
+## Folder guide
 
 ```
 app/
-├── app.vue              # Root component — skip link, toast, layout + page
-├── error.vue            # Global error page (404 / 500)
-├── assets/
-│   ├── css/main.css     # Tailwind + brand theme tokens + reusable classes
-│   └── fonts/           # Custom font files (.ttf), wired via nuxt.config fonts block
-├── components/          # Auto-imported Vue components (PascalCase)
-│   │                    # Prefix base UI with App: AppButton, AppInput, AppToast
-│   └── App/             # Base UI components (App/Button.vue → <AppButton />)
-├── composables/         # Auto-imported composables — useX pattern
-│   │                    # Composable = needs reactivity, lifecycle, or store access
-│   ├── useApp.ts        # App store accessor (storeToRefs wrapper)
-│   ├── useToast.ts      # useToast("success" | "error" | "warning" | "info", msg)
-│   └── useMounted.ts    # SSR-safe mounted flag
-├── layouts/             # Page layouts — must contain <slot />
-│   └── default.vue      # Base layout; add admin.vue, no-auth.vue, etc. as needed
-├── middleware/          # Route guards — apply via definePageMeta({ middleware: "x" })
-│   └── auth.ts          # Example login guard
-├── pages/               # File-based routing — keep lean, delegate to components
-├── plugins/             # Nuxt plugins
-│   └── vue-query.ts     # TanStack Query setup (SSR hydration included)
-├── store/               # Pinia stores — setup syntax, persisted to localStorage
-│   └── app.ts           # Global app store (toasts, auth state)
-└── utils/               # Auto-imported pure functions — one per file, default export
-    │                    # Util = pure in/out, no Vue reactivity
-    ├── types/           # Shared TypeScript types (never inline complex types)
-    ├── constants/       # App constants and static data
-    ├── rules.ts         # Form validation rules (required, email, password)
-    └── ...              # goTo, goBack, copy, formatDate, formatPrice, log, uuid
-
-server/
-└── api/                 # Nitro API routes — file name maps to URL
-                         # health.get.ts → GET /api/health
-
-public/                  # Static files served as-is (favicon, robots.txt, images)
-
-.claude/
-└── skills/
-    └── nuxt-conventions/  # Claude Code skill — enforces these project conventions
-                           # (directory structure, script setup, styling, stores)
+├── assets/css/main.css     # brand tokens + reusable classes
+├── components/
+│   ├── OgImage/            # Satori share cards (*.satori.vue)
+│   ├── AppLogo.vue         # wordmark is type, not an image
+│   └── AppThemeToggle.vue  # hydration-safe: icons swap in CSS
+├── composables/            # useTheme, usePageSeo, useTag, useToast
+└── utils/
+    ├── getAbsoluteUrl.ts   # canonicals / og:url / JSON-LD
+    ├── seoText.ts          # 60-char titles, 155-char descriptions
+    ├── seo/schema.ts       # JSON-LD builders
+    └── constants/brand.ts  # the identity, in one place
 ```
 
-## Conventions
-
-- **Always `<script setup lang="ts">`** — never Options API
-- **Auto-imports** — don't import `ref`, `computed`, `useRouter`, composables, or utils; only import types, third-party libs, and subfolder components
-- **Pages are lean** — business logic lives in composables, markup in components
-- **No repeated styles** — extract shared styles into `main.css`; use CSS variables from the theme, never hardcode colors
-- **Types live in `utils/types/`**, constants in `utils/constants/`
-- **`v-if` always pairs with `v-else`** — never leave a blank state
-- **Wrap browser-only components in `<ClientOnly>`** when SSR is on
-
-## Optional Modules (add when needed)
-
-| Module | Purpose |
-|--------|---------|
-| `@vite-pwa/nuxt` | PWA / installable app — already set up on the `pwa` branch |
-| `@nuxtjs/sitemap` | Sitemap generation (needs `site.url` in config) |
-| `@supabase/supabase-js` | Supabase backend |
-| `resend` | Transactional email (server-side) |
-
-## Scripts
-
-```bash
-npm run dev        # dev server
-npm run build      # production build
-npm run generate   # static site generation
-npm run preview    # preview production build
-```
+See `.claude/skills/nuxt-conventions/` for the project's Vue and Nuxt conventions.

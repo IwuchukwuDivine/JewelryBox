@@ -318,6 +318,8 @@ usePageSeo({
   padding-top: 20px;
 }
 
+/* The rail is desktop-only, and this file is the ONLY place its `display` is
+   set — see the note in Shop/FilterRail.vue for why that matters. */
 .collection__rail {
   display: none;
 }

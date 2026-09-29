@@ -65,8 +65,18 @@ const emit = defineEmits<{
 </script>
 
 <style scoped>
+/*
+ * No `display` here, deliberately.
+ *
+ * The page decides whether this rail is shown — it is desktop-only, and
+ * `.collection__rail` in `pages/[category].vue` sets `none` below 1024px and
+ * `flex` above it. Both selectors are one class plus one scope attribute, so
+ * declaring `display` in both files made them a specificity TIE broken only by
+ * stylesheet order, which Vite does not guarantee between a parent and its
+ * child component. The rail flashed on phones during load and vanished once
+ * the order settled. One owner, no tie.
+ */
 .filter-rail {
-  display: flex;
   flex-direction: column;
   gap: 24px;
   position: sticky;

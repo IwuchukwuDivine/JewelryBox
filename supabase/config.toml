@@ -261,14 +261,35 @@ otp_expiry = 900
 #
 # Left disabled locally: `supabase start` runs Mailpit on :54324 and catching mail
 # there is what makes the auth flows testable offline.
-[auth.email.smtp]
-enabled = false
-host = "smtp.resend.com"
-port = 465
-user = "resend"
-pass = "env(RESEND_API_KEY)"
-admin_email = "hello@jewelrybox.ng"
-sender_name = "JewelryBox"
+# DELIBERATELY COMMENTED OUT — configure this in the dashboard, not here.
+#
+# `supabase config push` writes every property this file DECLARES and leaves
+# undeclared ones untouched. So declaring the block with `enabled = false` (which
+# is what local needs, because Mailpit is what makes auth testable offline) would
+# push that false straight into production and quietly disable custom SMTP —
+# taking signup back to the built-in mailer's few-per-hour limit. Declaring it
+# `true` breaks local instead. There is no single value correct in both places,
+# so the block stays undeclared and production is configured once by hand:
+#
+#   Dashboard -> Project Settings -> Authentication -> SMTP Settings
+#     Host        smtp.resend.com
+#     Port        465            (587 also works; confirm in Resend's dashboard)
+#     Username    resend         (the literal string, not an address)
+#     Password    <your Resend API key>
+#     Sender      hello@jewelrybox.ng
+#     Sender name JewelryBox
+#
+# Then raise Authentication -> Rate Limits, whose defaults assume the crippled
+# built-in sender.
+#
+# [auth.email.smtp]
+# enabled = true
+# host = "smtp.resend.com"
+# port = 465
+# user = "resend"
+# pass = "env(RESEND_API_KEY)"
+# admin_email = "hello@jewelrybox.ng"
+# sender_name = "JewelryBox"
 
 # Branded auth mail. Templates live in `./supabase/templates/*.html` and share
 # the shell of `server/utils/orderEmails.ts` — ivory card, hairline rules, the

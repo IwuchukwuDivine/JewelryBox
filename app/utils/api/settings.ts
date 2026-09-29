@@ -94,5 +94,3 @@ export const supabaseSettingsRepo: SettingsRepository = {
     };
   },
 };
-
-export default supabaseSettingsRepo;

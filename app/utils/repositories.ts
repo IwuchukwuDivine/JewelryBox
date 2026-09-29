@@ -11,6 +11,7 @@ import type {
   DeliveryRepository,
   OrdersRepository,
   ProductsRepository,
+  SettingsRepository,
   WishlistRepository,
 } from "~/utils/types/api";
 import {
@@ -20,6 +21,7 @@ import {
   mockDeliveryRepo,
   mockOrdersRepo,
   mockProductsRepo,
+  mockSettingsRepo,
   mockWishlistRepo,
 } from "~/utils/mock";
 import {
@@ -40,7 +42,7 @@ import {
  *   export const productsRepo: ProductsRepository = supabaseProductsRepo;
  *
  * The checklist asks for one swap per commit, in this order:
- * products → announcements → auth → wishlist → cart → delivery → orders.
+ * products → announcements → auth → wishlist → cart → delivery → orders → settings.
  *
  * Both sides satisfy the same interface from `types/api.ts`, so a repository
  * that drifts from the contract fails `npm run typecheck`, not review.
@@ -53,6 +55,20 @@ export const wishlistRepo: WishlistRepository = mockWishlistRepo;
 export const deliveryRepo: DeliveryRepository = mockDeliveryRepo;
 export const ordersRepo: OrdersRepository = mockOrdersRepo;
 export const addressRepo: AddressRepository = mockAddressRepo;
+
+/**
+ * `supabaseSettingsRepo` exists and is contracted never to throw, so swapping
+ * this line cannot produce an error state. It stays on the fixture anyway
+ * until the storefront's turn comes.
+ *
+ * The reason is the premise the whole frontend lane was built on: Phases A–C
+ * are reviewable with no Supabase running. Pointing this at the database would
+ * put one failed request on every page load for anyone without `db:start`,
+ * which renders identically — the fallback is the same constants — while
+ * adding console noise that hides real errors. A swap with no visible effect
+ * is not worth the first commit.
+ */
+export const settingsRepo: SettingsRepository = mockSettingsRepo;
 
 /**
  * The admin lane is Supabase from the start, so `admin` is absent from the

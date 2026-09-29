@@ -803,6 +803,17 @@ const readSettingsOverride = (): Partial<PublicSettings> => {
 const str = (value: unknown, fallback: string): string =>
   typeof value === "string" && value.trim() ? value.trim() : fallback;
 
+/**
+ * `PublicSettings.whatsapp` declares digits only, and the realistic input is an
+ * admin typing `+234 813 623 2942` into a settings field — which would build
+ * `wa.me/+234 813 623 2942`. Enforce the declared shape rather than trust the
+ * row, so the failure cannot appear only against the real database.
+ */
+const digits = (value: unknown, fallback: string): string => {
+  const cleaned = typeof value === "string" ? value.replace(/\D/g, "") : "";
+  return cleaned || fallback;
+};
+
 export const mockSettingsRepo: SettingsRepository = {
   async publicSettings() {
     const fallback = PUBLIC_SETTINGS_FALLBACK;
@@ -820,7 +831,7 @@ export const mockSettingsRepo: SettingsRepository = {
         email: str(stored.contact?.email, fallback.contact.email),
         phone: str(stored.contact?.phone, fallback.contact.phone),
       },
-      whatsapp: str(stored.whatsapp, fallback.whatsapp),
+      whatsapp: digits(stored.whatsapp, fallback.whatsapp),
       // Empty is a value here — "not published" — so only a *missing* or
       // non-URL row falls back. See `PublicSettings.instagram`.
       instagram:

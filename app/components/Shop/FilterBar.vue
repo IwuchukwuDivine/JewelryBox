@@ -22,11 +22,10 @@
 
         <label class="filter-bar__sort">
           <span class="sr-only">Sort pieces by</span>
-          <select
-            class="mono-meta filter-bar__select"
-            :value="sort"
-            @change="onSort"
-          >
+          <span class="mono-meta filter-bar__sort-label" aria-hidden="true">
+            Sort &middot; {{ sortLabel }}
+          </span>
+          <select class="filter-bar__select" :value="sort" @change="onSort">
             <option v-for="option in SORT_OPTIONS" :key="option.value" :value="option.value">
               Sort · {{ option.label }}
             </option>
@@ -62,6 +61,11 @@ const emit = defineEmits<{
 }>();
 
 const countLabel = computed(() => `${props.total} ${props.total === 1 ? "piece" : "pieces"}`);
+
+/** What the visible label shows, since the real `<select>` is transparent. */
+const sortLabel = computed(
+  () => SORT_OPTIONS.find((o) => o.value === props.sort)?.label ?? SORT_OPTIONS[0]!.label,
+);
 
 const onSort = (event: Event) => {
   emit("update:sort", (event.target as HTMLSelectElement).value as ProductSort);
@@ -104,22 +108,43 @@ const onSort = (event: Event) => {
 }
 
 .filter-bar__sort {
+  position: relative;
   display: flex;
   align-items: center;
 }
 
-/* The native control, stripped to type — there is no room for a field here. */
-.filter-bar__select {
-  appearance: none;
+.filter-bar__sort-label {
+  display: block;
   padding: 6px 0;
-  border: none;
-  background: none;
   color: var(--text-primary);
-  cursor: pointer;
   text-align: right;
+  pointer-events: none;
 }
 
-.filter-bar__select:focus-visible {
+/*
+ * The native `<select>` is transparent and laid over the label above.
+ *
+ * It has to read 16px or iOS Safari zooms the viewport the moment it is
+ * focused, and never zooms back — but this bar's design calls for a 10px mono
+ * label. So the visible text is the span and the real control sits invisibly
+ * on top at a size iOS accepts. The native picker is still what opens, which
+ * is the right control on a phone.
+ */
+.filter-bar__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  border: none;
+  background: none;
+  font-size: 16px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* The control is invisible, so the focus ring goes on what is visible. */
+.filter-bar__sort:focus-within {
   outline: 2px solid var(--ring-default);
   outline-offset: 2px;
 }

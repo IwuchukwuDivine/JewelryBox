@@ -9,7 +9,7 @@
       <div v-reveal class="band__figure">
         <NuxtImg
           :src="STONE_IMAGE"
-          alt="A moissanite link bracelet under raking light"
+          alt="A pavé-set moissanite cuban link chain on black velvet"
           width="800"
           height="800"
           sizes="xs:100vw sm:100vw md:50vw lg:600px xl:600px"
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { PHOTOS, mockImage } from "~/utils/mock/images";
+import { collectionBySlug } from "~/utils/constants/catalog";
 
 /**
  * The moissanite band — the one section that is dark in both themes.
@@ -50,8 +50,13 @@ import { PHOTOS, mockImage } from "~/utils/mock/images";
  * fixed editorial ground, not a surface, so it does not follow the theme. The
  * type and hairlines on it come from the bone/obsidian brand constants, which
  * are also theme-independent.
+ *
+ * The photograph is the vendor's own, read from the collection definition so
+ * this band and the `/moissanite` hero can never show different stock. It is
+ * portrait (761×1280) inside a square frame, so `object-fit: cover` takes the
+ * middle — which is where the chain and its clasp sit.
  */
-const STONE_IMAGE = mockImage(PHOTOS.bracelets[1]!, 900);
+const STONE_IMAGE = collectionBySlug("moissanite")!.heroImage;
 
 const STATS = [
   { value: "2.65", label: "Refractive" },

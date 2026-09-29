@@ -270,7 +270,7 @@ export default defineNuxtConfig({
       "process.env.NUXT_SITE_URL": JSON.stringify(SITE_URL),
     },
     optimizeDeps: {
-      include: ["@tanstack/vue-query", "@vueuse/core", "lucide-vue-next"],
+      include: ["@tanstack/vue-query", "@vueuse/core", "lucide-vue-next", "@supabase/supabase-js"],
     },
   },
 

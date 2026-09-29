@@ -1,44 +1,50 @@
 <template>
-  <div
-    class="flex min-h-dvh flex-col items-center justify-center px-6 py-20"
-    style="background: var(--surface); color: var(--text-primary)"
-  >
-    <p
-      class="mb-10 text-[0.7rem] font-medium tracking-[0.4em] uppercase"
-      style="color: var(--text-muted)"
-    >
-      Jewelry Box
-    </p>
-
-    <h1 class="max-w-lg text-center text-3xl font-semibold tracking-tight sm:text-4xl">
-      A private collection of luxury wristwatches
-    </h1>
-
-    <div
-      class="my-8 h-px w-12"
-      style="background: var(--border-default)"
-      aria-hidden="true"
-    />
-
-    <p
-      class="max-w-sm text-center text-sm leading-relaxed"
-      style="color: var(--text-secondary)"
-    >
-      The house is still being assembled. Exceptional timepieces will be presented here shortly.
-    </p>
-  </div>
+  <main class="home">
+    <HomeHero />
+    <HomeCategoryTiles />
+    <HomeFeaturedRail />
+    <HomeMoissaniteBand />
+    <HomeCuratedList />
+    <HomeTestimonial />
+    <HomeNewsletter />
+    <HomeRecentlyViewed />
+  </main>
 </template>
 
 <script setup lang="ts">
-useHead({
-  htmlAttrs: {
-    class: "dark",
-  },
-});
+import { SITE_TAGLINE } from "~/utils/constants/brand";
 
-useSeoMeta({
-  title: "Jewelry Box",
+/**
+ * The home page, in the prototype's order: hero → the lines → the watch edit →
+ * moissanite → curated edits → one customer line → the letter → what you have
+ * already seen.
+ *
+ * Every section that carries data resolves it on the server (`await
+ * suspense()`), so the first paint is complete and nothing reflows in after
+ * hydration.
+ */
+usePageSeo({
+  title: "Luxury Wristwatches & Fine Jewelry",
   description:
-    "A private collection of luxury wristwatches. The house is still being assembled — we open soon.",
+    "Luxury wristwatches, fine jewelry and moissanite, chosen for how they feel years later. Certified pieces, insured delivery across Nigeria.",
+  path: "/",
+  ogImage: {
+    card: "Default",
+    props: {
+      pill: "SS·26 — Edit 01",
+      title: "Luxury, Worn Close.",
+      description: SITE_TAGLINE,
+    },
+  },
+  // Organization + WebSite are site-wide facts: declare them once, here.
+  jsonLd: siteGraph(),
 });
 </script>
+
+<style scoped>
+.home {
+  /* The footer opens with its own rule, so the page only needs the last
+     section's breathing room. */
+  padding-bottom: 8px;
+}
+</style>

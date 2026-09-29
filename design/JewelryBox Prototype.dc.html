@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0a0908}
+a{color:inherit;text-decoration:none}a:hover{color:inherit}
+button{font-family:inherit}
+input,select,textarea{font-family:inherit}
+[data-jb]{--bg:#121010;--surface:#1A1715;--elev:#221E1B;--text:#F3EEE6;--text2:#C9C0B4;--muted:#8C8378;--border:#2C2724;--accent:#C8A97E;--accent-h:#D9BE97;--on-accent:#171310;--success:#6FA07A;--error:#D26A67;--warning:#D2A15A;--glass:rgba(18,16,16,.72)}
+[data-jb][data-theme="light"]{--bg:#F6F1E8;--surface:#FBF8F2;--elev:#FFFFFF;--text:#1C1714;--text2:#4A423C;--muted:#6E645A;--border:#E3DBCF;--accent:#9C7A4B;--accent-h:#86673D;--on-accent:#FBF8F2;--success:#3F7A4C;--error:#B04543;--warning:#A67A2E;--glass:rgba(246,241,232,.78)}
+@keyframes jbRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes jbFade{from{opacity:0}to{opacity:1}}
+@keyframes jbScale{from{transform:scale(1.08)}to{transform:scale(1)}}
+@keyframes jbSlideIn{from{transform:translateX(100%)}to{transform:none}}
+@keyframes jbSheet{from{transform:translateY(100%)}to{transform:none}}
+@keyframes jbLine{0%{width:0;left:0}50%{width:100%;left:0}100%{width:0;left:100%}}
+@keyframes jbPulse{0%,100%{opacity:.35}50%{opacity:1}}
+[data-jb] ::-webkit-scrollbar{display:none}
+[data-jb] input::placeholder,[data-jb] textarea::placeholder{color:var(--muted)}
+</style>
+</helmet>
+<div data-jb data-theme="{{ theme }}" style="width:390px;min-height:100dvh;margin:0 auto;background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;position:relative;overflow:hidden;transition:background .6s ease,color .6s ease">
+
+<sc-if value="{{ booting }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Loading" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;animation:jbFade .4s ease both">
+    <div style="font-family:Marcellus,serif;font-size:56px;line-height:1;display:flex;align-items:baseline;color:var(--text)"><span style="letter-spacing:-.18em;position:relative;top:5px">J</span><span>B</span></div>
+    <div style="position:relative;width:120px;height:1px;background:var(--border);overflow:hidden"><div style="position:absolute;top:0;height:1px;background:var(--accent);animation:jbLine 1.4s cubic-bezier(.16,1,.3,1) infinite"></div></div>
+  </div>
+</sc-if>
+
+<header style="position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:56px;padding:0 12px;background:var(--glass);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)">
+  <div style="display:flex">
+    <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ back }}" aria-label="Back" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M11 3L5 9l6 6"></path></svg></button>
+    </sc-if>
+    <sc-if value="{{ showMenuBtn }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ openMenu }}" aria-label="Menu" style="width:44px;height:44px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:5px;background:none;border:none;cursor:pointer;padding:0 12px"><span style="display:block;width:20px;height:1px;background:var(--text)"></span><span style="display:block;width:12px;height:1px;background:var(--text)"></span></button>
+    </sc-if>
+  </div>
+  <button onClick="{{ goHome }}" style="background:none;border:none;cursor:pointer;font-family:Marcellus,serif;font-size:19px;letter-spacing:.02em;color:var(--text);padding:8px">JewelryBox</button>
+  <div style="display:flex;justify-content:flex-end">
+    <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer"><span style="display:block;width:11px;height:11px;border-radius:50%;border:1px solid var(--text);background:{{ themeDot }}"></span></button>
+    <button onClick="{{ openSearch }}" aria-label="Search" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6"></circle><line x1="12.5" y1="12.5" x2="17" y2="17"></line></svg></button>
+    <button onClick="{{ openCart }}" aria-label="Bag" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;position:relative;color:var(--text)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2.5" y="6" width="13" height="10.5"></rect><path d="M6 6V4.5a3 3 0 0 1 6 0V6"></path></svg><sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:6px;right:4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></sc-if></button>
+  </div>
+</header>
+
+<!-- ═══ HOME ═══ -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main data-screen-label="Home" style="animation:jbFade .5s ease both">
+  <section style="position:relative;height:720px;margin-top:-56px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 32px">
+    <div ref="{{ heroImg }}" style="position:absolute;inset:0;animation:jbScale 2.6s cubic-bezier(.16,1,.3,1) both;will-change:transform"><img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&w=900&q=80" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.9"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,16,.35) 0%,transparent 30%,var(--bg) 100%)"></div>
+    <div style="position:absolute;inset:68px 12px 12px;border:1px solid rgba(243,238,230,.14);pointer-events:none"></div>
+    <div style="position:absolute;top:72px;left:20px;right:20px;display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:rgba(243,238,230,.75)"><span>SS·26 — EDIT 01</span><span>LAGOS 6.45°N 3.39°E</span></div>
+    <div style="position:absolute;top:50%;right:20px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:8px"><span style="width:1px;height:48px;background:rgba(243,238,230,.4)"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;color:rgba(243,238,230,.6);writing-mode:vertical-rl;animation:jbPulse 3s ease infinite">SCROLL</span></div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:18px">
+      <p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);animation:jbRise 1.2s cubic-bezier(.16,1,.3,1) .3s both">Watches · Fine Jewelry · Moissanite</p>
+      <h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:58px;line-height:.98;letter-spacing:0;text-wrap:balance;animation:jbRise 1.2s cubic-bezier(.16,1,.3,1) .45s both">Luxury,<br>Worn Close.</h1>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--text2);max-width:280px;animation:jbRise 1.2s cubic-bezier(.16,1,.3,1) .6s both">Pieces chosen for how they feel years after the box is opened.</p>
+      <div style="display:flex;gap:8px;margin-top:6px;animation:jbRise 1.2s cubic-bezier(.16,1,.3,1) .75s both">
+        <button onClick="{{ goWatches }}" style="flex:1;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:16px 10px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Shop Watches</button>
+        <button onClick="{{ goJewelry }}" style="flex:1;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:15px 10px;border-radius:2px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer">Explore Jewelry</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:56px 20px 0;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)"><span>01 / The Collection</span><span>02 Lines</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button onClick="{{ goWatches }}" style="position:relative;aspect-ratio:3/4.4;padding:0;border:1px solid var(--border);border-radius:2px;overflow:hidden;background:var(--surface);cursor:pointer;text-align:left">
+        <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=600&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(18,16,16,.92))"></div>
+        <div style="position:absolute;left:14px;right:14px;bottom:14px;display:flex;flex-direction:column;gap:4px;color:#F3EEE6"><span style="font-family:Marcellus,serif;font-size:24px;line-height:1">Watches</span><span style="font-size:11px;color:#C9C0B4">24 pieces →</span></div>
+      </button>
+      <button onClick="{{ goJewelry }}" style="position:relative;aspect-ratio:3/4.4;padding:0;border:1px solid var(--border);border-radius:2px;overflow:hidden;background:var(--surface);cursor:pointer;text-align:left">
+        <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=600&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(18,16,16,.92))"></div>
+        <div style="position:absolute;left:14px;right:14px;bottom:14px;display:flex;flex-direction:column;gap:4px;color:#F3EEE6"><span style="font-family:Marcellus,serif;font-size:24px;line-height:1">Jewelry</span><span style="font-size:11px;color:#C9C0B4">96 pieces →</span></div>
+      </button>
+    </div>
+  </section>
+
+  <section style="padding:64px 0 0">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:0 20px 18px">
+      <div><p style="margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">02 / The Watch Edit</p><h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:30px;line-height:1.05">Chosen for the wrist.</h2></div>
+      <button onClick="{{ goWatches }}" style="background:none;border:none;cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);padding:8px 0">All →</button>
+    </div>
+    <div style="display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:0 20px 4px;scroll-snap-type:x mandatory;scroll-padding:20px">
+      <sc-for list="{{ featured }}" as="p" hint-placeholder-count="4">
+        <div style="flex:0 0 250px;scroll-snap-align:start;display:flex;flex-direction:column;gap:12px">
+          <div style="position:relative;aspect-ratio:4/5;background:var(--surface);border:1px solid var(--border);border-radius:2px;overflow:hidden">
+            <button onClick="{{ p.open }}" style="position:absolute;inset:0;padding:0;border:none;background:none;cursor:pointer"><img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></button>
+            <span style="position:absolute;top:10px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#F3EEE6;background:rgba(18,16,16,.55);padding:4px 6px">{{ p.idx }}</span>
+            <button onClick="{{ p.toggleWish }}" aria-label="Wishlist" style="position:absolute;right:6px;top:6px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer"><span style="display:block;width:11px;height:11px;border:1px solid #F3EEE6;transform:rotate(45deg);background:{{ p.wishBg }}"></span></button>
+          </div>
+          <button onClick="{{ p.open }}" style="background:none;border:none;padding:0;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px;color:var(--text)">
+            <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ p.brand }}</span>
+            <span style="display:flex;justify-content:space-between;gap:12px;width:100%"><span style="font-family:Marcellus,serif;font-size:17px">{{ p.name }}</span><span style="font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap">{{ p.priceFmt }}</span></span>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="margin:64px 0 0;padding:48px 20px;background:#0B0A09;color:#F3EEE6;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8C8378"><span>03 / Moissanite</span><span>SiC · Lab-created</span></div>
+    <div style="position:relative;aspect-ratio:1;border:1px solid #2C2724;overflow:hidden"><img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=800&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;inset:10px;border:1px solid rgba(243,238,230,.18);pointer-events:none"></div></div>
+    <h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:32px;line-height:1.08;text-wrap:balance">More fire than diamond. Chosen on purpose.</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #2C2724;border-bottom:1px solid #2C2724">
+      <div style="padding:16px 0;border-right:1px solid #2C2724"><p style="margin:0 0 4px;font-family:Marcellus,serif;font-size:24px">2.65</p><p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8C8378">Refractive</p></div>
+      <div style="padding:16px 12px;border-right:1px solid #2C2724"><p style="margin:0 0 4px;font-family:Marcellus,serif;font-size:24px">9.25</p><p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8C8378">Mohs</p></div>
+      <div style="padding:16px 12px"><p style="margin:0 0 4px;font-family:Marcellus,serif;font-size:24px">D–F</p><p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8C8378">Colour</p></div>
+    </div>
+    <button onClick="{{ goMoissanite }}" style="align-self:flex-start;background:none;border:none;cursor:pointer;padding:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#F3EEE6;border-bottom:1px solid var(--accent)">Explore Moissanite →</button>
+  </section>
+
+  <section style="padding:64px 20px 0;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)"><span>04 / Curated</span><span>08 Edits</span></div>
+    <div style="display:flex;flex-direction:column;border-top:1px solid var(--border)">
+      <sc-for list="{{ curated }}" as="c" hint-placeholder-count="8">
+        <button onClick="{{ c.open }}" style="display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text);text-align:left">
+          <span style="font-family:Marcellus,serif;font-size:20px">{{ c.name }}</span>
+          <span style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ c.count }}</span><span style="color:var(--text2)">→</span></span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding:64px 20px 0">
+    <figure style="margin:0;padding:28px 22px;border:1px solid var(--border);border-radius:2px;background:var(--surface);display:flex;flex-direction:column;gap:22px;position:relative">
+      <span style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)"></span><span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:1px solid var(--accent);border-right:1px solid var(--accent)"></span>
+      <blockquote style="margin:0;font-family:Marcellus,serif;font-size:21px;line-height:1.35;text-wrap:pretty">“Delivered to Abuja in two days, insured, with the certificate. Exactly as described.”</blockquote>
+      <figcaption style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)"><span>Tunde A. · Abuja</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">MERIDIAN 40</span></figcaption>
+    </figure>
+  </section>
+
+  <section style="padding:64px 20px 0;display:flex;flex-direction:column;gap:16px">
+    <h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:30px;line-height:1.1;text-wrap:balance">Enter the world of JewelryBox.</h2>
+    <p style="margin:0;font-size:14px;line-height:1.55;color:var(--text2)">Private previews and the occasional letter from the house.</p>
+    <div style="display:flex;border-bottom:1px solid var(--text2)">
+      <input type="email" placeholder="Email address" style="flex:1;font-size:15px;padding:14px 0;border:none;background:transparent;color:var(--text);outline:none;min-width:0">
+      <button onClick="{{ subscribe }}" style="background:none;border:none;cursor:pointer;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text);padding:0 0 0 12px">Enter →</button>
+    </div>
+  </section>
+
+  <footer style="margin-top:72px;padding:40px 20px 36px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="font-family:Marcellus,serif;font-size:36px;line-height:1;display:flex;align-items:baseline"><span style="letter-spacing:-.18em;position:relative;top:3px">J</span><span>B</span></div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--muted);text-align:right">JEWELRYBOX.NG<br>LAGOS · 2026</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px 16px">
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">{{ col.title }}</span>
+          <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="4"><button onClick="{{ l.go }}" style="background:none;border:none;padding:0;cursor:pointer;text-align:left;font-size:14px;color:var(--text);line-height:1.6">{{ l.label }}</button></sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)"><span>© 2026 JewelryBox.ng</span><span style="display:flex;gap:10px"><span>Paystack</span><span>Flutterwave</span></span></div>
+  </footer>
+</main>
+</sc-if>
+
+<!-- ═══ CATEGORY ═══ -->
+<sc-if value="{{ isCategory }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Category" style="animation:jbFade .5s ease both;padding-bottom:80px">
+  <section style="position:relative;height:300px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 24px">
+    <img src="{{ cat.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,16,.2),var(--bg))"></div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">{{ cat.eyebrow }}</span>
+      <h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:44px;line-height:1">{{ cat.title }}</h1>
+      <p style="margin:0;font-size:14px;line-height:1.5;color:var(--text2)">{{ cat.intro }}</p>
+    </div>
+  </section>
+  <div style="position:sticky;top:56px;z-index:5;background:var(--glass);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;flex-direction:column">
+    <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:12px 20px 0">
+      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.pick }}" style="flex:0 0 auto;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;border-radius:2px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};cursor:pointer;white-space:nowrap">{{ f.label }}</button></sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">
+      <span>{{ resultCount }} pieces</span>
+      <button onClick="{{ cycleSort }}" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);padding:6px 0">Sort · {{ sortLabel }} ↓</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 8px;padding:20px 20px 0">
+    <sc-for list="{{ results }}" as="p" hint-placeholder-count="6">
+      <div style="grid-column:{{ p.span }};display:flex;flex-direction:column;gap:10px">
+        <div style="position:relative;aspect-ratio:{{ p.ratio }};background:var(--surface);border:1px solid var(--border);border-radius:2px;overflow:hidden">
+          <button onClick="{{ p.open }}" style="position:absolute;inset:0;padding:0;border:none;background:none;cursor:pointer"><img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></button>
+          <sc-if value="{{ p.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:8px;left:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#F3EEE6;background:rgba(18,16,16,.55);padding:4px 6px">{{ p.badge }}</span></sc-if>
+          <button onClick="{{ p.toggleWish }}" aria-label="Wishlist" style="position:absolute;right:2px;top:2px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer"><span style="display:block;width:11px;height:11px;border:1px solid #F3EEE6;transform:rotate(45deg);background:{{ p.wishBg }}"></span></button>
+          <button onClick="{{ p.quick }}" style="position:absolute;left:8px;right:8px;bottom:8px;padding:10px;border:none;border-radius:2px;background:rgba(18,16,16,.72);backdrop-filter:blur(8px);color:#F3EEE6;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">Quick view</button>
+        </div>
+        <button onClick="{{ p.open }}" style="background:none;border:none;padding:0;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;color:var(--text)">
+          <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ p.brand }}</span>
+          <span style="font-family:Marcellus,serif;font-size:16px;line-height:1.2">{{ p.name }}</span>
+          <span style="display:flex;gap:8px;align-items:baseline;font-variant-numeric:tabular-nums"><sc-if value="{{ p.hasWas }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--muted);text-decoration:line-through">{{ p.wasFmt }}</span></sc-if><span style="font-size:14px">{{ p.priceFmt }}</span></span>
+          <span style="font-size:11px;color:{{ p.availColor }}">{{ p.avail }}</span>
+        </button>
+      </div>
+    </sc-for>
+  </div>
+  <div style="padding:32px 20px 0;display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div style="width:120px;height:1px;background:var(--border);position:relative"><div style="position:absolute;left:0;top:0;height:1px;width:{{ loadedPct }};background:var(--text)"></div></div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--muted)">{{ resultCount }} OF {{ resultCount }}</span>
+  </div>
+  <sc-if value="{{ hasRecent }}" hint-placeholder-val="{{ false }}">
+    <section style="padding:56px 0 0">
+      <p style="margin:0 0 14px;padding:0 20px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Recently viewed</p>
+      <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 20px">
+        <sc-for list="{{ recent }}" as="p" hint-placeholder-count="2"><button onClick="{{ p.open }}" style="flex:0 0 120px;padding:0;border:1px solid var(--border);border-radius:2px;background:var(--surface);cursor:pointer;overflow:hidden;text-align:left;color:var(--text)"><img src="{{ p.img }}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;display:block"><span style="display:block;padding:8px;font-size:12px;line-height:1.3">{{ p.name }}</span></button></sc-for>
+      </div>
+    </section>
+  </sc-if>
+</main>
+</sc-if>
+
+<!-- ═══ PDP ═══ -->
+<sc-if value="{{ isPdp }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Product Detail" style="animation:jbFade .5s ease both;padding-bottom:110px">
+  <section style="position:relative">
+    <div style="position:relative;aspect-ratio:4/5;background:var(--surface);overflow:hidden">
+      <img src="{{ pdp.currentImg }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;animation:jbFade .6s ease both">
+      <div style="position:absolute;inset:12px;border:1px solid rgba(243,238,230,.16);pointer-events:none"></div>
+      <span style="position:absolute;top:22px;left:22px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;color:#F3EEE6;background:rgba(18,16,16,.55);padding:4px 6px">{{ pdp.galleryPos }}</span>
+      <button onClick="{{ pdp.toggleWish }}" aria-label="Wishlist" style="position:absolute;right:14px;top:14px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(18,16,16,.45);border:none;border-radius:2px;cursor:pointer;backdrop-filter:blur(8px)"><span style="display:block;width:11px;height:11px;border:1px solid #F3EEE6;transform:rotate(45deg);background:{{ pdp.wishBg }}"></span></button>
+      <button onClick="{{ pdp.zoom }}" style="position:absolute;right:14px;bottom:14px;padding:8px 10px;border:none;border-radius:2px;background:rgba(18,16,16,.55);backdrop-filter:blur(8px);color:#F3EEE6;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;cursor:pointer">ZOOM · 360°</button>
+    </div>
+    <div style="display:flex;gap:6px;padding:10px 20px 0">
+      <sc-for list="{{ pdp.thumbs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.pick }}" style="flex:1;aspect-ratio:1;padding:0;border:1px solid {{ t.border }};border-radius:2px;overflow:hidden;background:var(--surface);cursor:pointer;opacity:{{ t.opacity }}"><img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></button></sc-for>
+    </div>
+  </section>
+  <section style="padding:24px 20px 0;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)"><span>{{ pdp.brand }}</span><span>REF {{ pdp.ref }}</span></div>
+    <h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:34px;line-height:1.05">{{ pdp.name }}</h1>
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span style="display:flex;gap:10px;align-items:baseline;font-variant-numeric:tabular-nums"><sc-if value="{{ pdp.hasWas }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:var(--muted);text-decoration:line-through">{{ pdp.wasFmt }}</span></sc-if><span style="font-size:22px">{{ pdp.priceFmt }}</span></span>
+      <span style="font-size:12px;color:{{ pdp.availColor }}">● {{ pdp.avail }}</span>
+    </div>
+    <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.5">Or 3 payments of <span style="color:var(--text);font-variant-numeric:tabular-nums">{{ pdp.installment }}</span> · Insured delivery across Nigeria in 1–3 working days.</p>
+    <p style="margin:6px 0 0;font-size:15px;line-height:1.6;color:var(--text2)">{{ pdp.description }}</p>
+  </section>
+  <section style="padding:28px 20px 0">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)">
+      <sc-for list="{{ pdp.specs }}" as="s" hint-placeholder-count="4"><div style="background:var(--bg);padding:14px"><p style="margin:0 0 4px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ s.k }}</p><p style="margin:0;font-size:13px;color:var(--text)">{{ s.v }}</p></div></sc-for>
+    </div>
+  </section>
+  <section style="padding:28px 20px 0;display:flex;flex-direction:column;border-top:1px solid var(--border);margin-top:28px">
+    <sc-for list="{{ pdp.sections }}" as="s" hint-placeholder-count="6">
+      <div style="border-bottom:1px solid var(--border)">
+        <button onClick="{{ s.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0;border:none;background:none;cursor:pointer;color:var(--text);text-align:left"><span style="font-family:Marcellus,serif;font-size:18px">{{ s.title }}</span><span style="font-size:18px;color:var(--muted);transform:rotate({{ s.rot }});transition:transform .4s cubic-bezier(.16,1,.3,1)">+</span></button>
+        <sc-if value="{{ s.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 0 20px;font-size:14px;line-height:1.6;color:var(--text2);animation:jbRise .5s cubic-bezier(.16,1,.3,1) both">{{ s.body }}</p></sc-if>
+      </div>
+    </sc-for>
+  </section>
+  <section style="padding:48px 0 0">
+    <p style="margin:0 0 14px;padding:0 20px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">You may also consider</p>
+    <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 20px">
+      <sc-for list="{{ pdp.related }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.open }}" style="flex:0 0 150px;padding:0;border:1px solid var(--border);border-radius:2px;background:var(--surface);cursor:pointer;overflow:hidden;text-align:left;color:var(--text)"><img src="{{ p.img }}" alt="" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block"><span style="display:flex;flex-direction:column;gap:2px;padding:10px"><span style="font-size:13px;line-height:1.3">{{ p.name }}</span><span style="font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums">{{ p.priceFmt }}</span></span></button></sc-for>
+    </div>
+  </section>
+  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;box-sizing:border-box;z-index:15;padding:12px 16px 20px;background:var(--glass);backdrop-filter:blur(18px);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+    <div style="display:flex;flex-direction:column;flex:0 0 auto;min-width:0"><span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Total</span><span style="font-size:15px;font-variant-numeric:tabular-nums">{{ pdp.priceFmt }}</span></div>
+    <button onClick="{{ pdp.addToBag }}" style="flex:1;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:16px 8px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Add to Bag</button>
+    <button onClick="{{ pdp.buyNow }}" style="flex:0 0 auto;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:15px 12px;border-radius:2px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer;white-space:nowrap">Buy Now</button>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══ CHECKOUT ═══ -->
+<sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Checkout" style="animation:jbFade .5s ease both;padding:24px 20px 64px;display:flex;flex-direction:column;gap:28px">
+  <sc-if value="{{ co.notDone }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)"><span>Checkout</span><span>Step {{ co.step }} / 3</span></div>
+      <div style="display:flex;gap:4px"><sc-for list="{{ co.bars }}" as="b" hint-placeholder-count="3"><span style="flex:1;height:1px;background:{{ b }}"></span></sc-for></div>
+      <h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:32px;line-height:1.05">{{ co.title }}</h1>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ co.isInfo }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:{{ co.err.nameColor }}">Full name</span><input value="{{ co.form.name }}" onChange="{{ co.set.name }}" placeholder="Adaeze Okonkwo" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid {{ co.err.nameColor }};background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:{{ co.err.emailColor }}">Email</span><input value="{{ co.form.email }}" onChange="{{ co.set.email }}" placeholder="you@example.com" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid {{ co.err.emailColor }};background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:{{ co.err.phoneColor }}">Phone</span><input value="{{ co.form.phone }}" onChange="{{ co.set.phone }}" placeholder="0803 000 0000" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid {{ co.err.phoneColor }};background:transparent;color:var(--text);outline:none;border-radius:0"><sc-if value="{{ co.err.phone }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--error)">Enter an 11-digit Nigerian number.</span></sc-if></label>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ co.isDelivery }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:{{ co.err.stateColor }}">State</span><select value="{{ co.form.state }}" onChange="{{ co.set.state }}" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid {{ co.err.stateColor }};background:transparent;color:var(--text);outline:none;border-radius:0;appearance:none"><option value="">Select state</option><sc-for list="{{ co.states }}" as="s" hint-placeholder-count="5"><option value="{{ s }}">{{ s }}</option></sc-for></select></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:{{ co.err.cityColor }}">City</span><input value="{{ co.form.city }}" onChange="{{ co.set.city }}" placeholder="Lekki" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid {{ co.err.cityColor }};background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:{{ co.err.addressColor }}">Address</span><input value="{{ co.form.address }}" onChange="{{ co.set.address }}" placeholder="12 Admiralty Way" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid {{ co.err.addressColor }};background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Delivery instructions (optional)</span><input value="{{ co.form.notes }}" onChange="{{ co.set.notes }}" placeholder="Call on arrival" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+      <div style="display:flex;justify-content:space-between;padding:14px;border:1px solid var(--border);border-radius:2px;font-size:13px"><span style="color:var(--text2)">Estimated delivery</span><span>{{ co.eta }}</span></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ co.isPayment }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ co.payOptions }}" as="o" hint-placeholder-count="3">
+        <button onClick="{{ o.pick }}" style="display:flex;align-items:center;gap:14px;padding:16px;border:1px solid {{ o.border }};border-radius:2px;background:var(--surface);cursor:pointer;text-align:left;color:var(--text)">
+          <span style="width:14px;height:14px;border-radius:50%;border:1px solid var(--text);display:flex;align-items:center;justify-content:center;flex:0 0 auto"><span style="width:6px;height:6px;border-radius:50%;background:{{ o.dot }}"></span></span>
+          <span style="display:flex;flex-direction:column;gap:2px;flex:1"><span style="font-size:14px;font-weight:500">{{ o.name }}</span><span style="font-size:12px;color:var(--text2)">{{ o.desc }}</span></span>
+        </button>
+      </sc-for>
+      <div style="display:flex;gap:16px;padding:14px 0 0;font-size:11px;color:var(--muted)"><span>● Secure payment</span><span>● Authentic products</span><span>● Protected checkout</span></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ co.notDone }}" hint-placeholder-val="{{ true }}">
+    <section style="border:1px solid var(--border);border-radius:2px;padding:18px;display:flex;flex-direction:column;gap:14px;background:var(--surface)">
+      <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)"><span>Order summary</span><span>{{ cartCount }} items</span></div>
+      <sc-for list="{{ cartLines }}" as="l" hint-placeholder-count="2"><div style="display:flex;gap:12px;align-items:center"><img src="{{ l.img }}" alt="" style="width:44px;height:52px;object-fit:cover;border:1px solid var(--border)"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px">{{ l.name }}</span><span style="font-size:11px;color:var(--muted)">Qty {{ l.qty }}</span></span><span style="font-size:13px;font-variant-numeric:tabular-nums">{{ l.lineFmt }}</span></div></sc-for>
+      <div style="display:flex;border-bottom:1px solid var(--border)"><input value="{{ co.form.promo }}" onChange="{{ co.set.promo }}" placeholder="Promo code" style="flex:1;font-size:13px;padding:10px 0;border:none;background:transparent;color:var(--text);outline:none;min-width:0"><button onClick="{{ co.applyPromo }}" style="background:none;border:none;cursor:pointer;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text)">Apply</button></div>
+      <sc-if value="{{ co.promoMsgShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:{{ co.promoColor }}">{{ co.promoMsg }}</span></sc-if>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums">
+        <div style="display:flex;justify-content:space-between"><span>Subtotal</span><span>{{ subtotalFmt }}</span></div>
+        <sc-if value="{{ co.hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;color:var(--success)"><span>Discount</span><span>−{{ co.discountFmt }}</span></div></sc-if>
+        <div style="display:flex;justify-content:space-between"><span>Delivery</span><span>{{ co.deliveryFmt }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);color:var(--text);font-size:16px"><span>Total</span><span>{{ co.totalFmt }}</span></div>
+      </div>
+    </section>
+    <button onClick="{{ co.next }}" style="font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:18px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">{{ co.cta }}</button>
+  </sc-if>
+
+  <sc-if value="{{ co.isDone }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Order Confirmed" style="min-height:70dvh;display:flex;flex-direction:column;justify-content:center;gap:24px;animation:jbRise .8s cubic-bezier(.16,1,.3,1) both">
+      <div style="font-family:Marcellus,serif;font-size:56px;line-height:1;display:flex;align-items:baseline"><span style="letter-spacing:-.18em;position:relative;top:5px">J</span><span>B</span></div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">Order JB-26-0417 · Confirmed</span>
+      <h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:36px;line-height:1.05;text-wrap:balance">Your piece is being prepared.</h1>
+      <p style="margin:0;font-size:15px;line-height:1.6;color:var(--text2)">A confirmation has been sent to {{ co.form.email }}. Your order will be sealed, insured and dispatched within 24 hours. Estimated arrival: {{ co.eta }}.</p>
+      <div style="display:flex;gap:8px"><button onClick="{{ goOrders }}" style="flex:1;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Track Order</button><button onClick="{{ goHome }}" style="flex:1;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:15px;border-radius:2px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer">Continue</button></div>
+    </div>
+  </sc-if>
+</main>
+</sc-if>
+
+<!-- ═══ WISHLIST ═══ -->
+<sc-if value="{{ isWishlist }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Wishlist" style="animation:jbFade .5s ease both;padding:24px 20px 64px;display:flex;flex-direction:column;gap:24px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><p style="margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Saved · {{ wishCount }}</p><h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:36px;line-height:1">Wishlist</h1></div><button onClick="{{ shareWish }}" style="background:none;border:1px solid var(--border);border-radius:2px;cursor:pointer;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text);padding:10px 12px">Share</button></div>
+  <sc-if value="{{ hasWish }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ wishItems }}" as="p" hint-placeholder-count="2">
+        <div style="display:flex;gap:14px;padding:12px;border:1px solid var(--border);border-radius:2px;background:var(--surface)">
+          <button onClick="{{ p.open }}" style="padding:0;border:none;background:none;cursor:pointer;flex:0 0 96px"><img src="{{ p.img }}" alt="" style="width:96px;height:116px;object-fit:cover;display:block"></button>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
+            <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ p.brand }}</span>
+            <span style="font-family:Marcellus,serif;font-size:17px;line-height:1.2">{{ p.name }}</span>
+            <span style="font-size:14px;font-variant-numeric:tabular-nums">{{ p.priceFmt }}</span>
+            <span style="font-size:11px;color:{{ p.availColor }}">{{ p.avail }}</span>
+            <div style="display:flex;gap:8px;margin-top:auto"><button onClick="{{ p.add }}" style="flex:1;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:12px 8px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Add to Bag</button><button onClick="{{ p.toggleWish }}" style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:11px 10px;border-radius:2px;border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer">Remove</button></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{ noWish }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height:50dvh;display:flex;flex-direction:column;justify-content:center;gap:20px">
+      <span style="display:block;width:28px;height:28px;border:1px solid var(--accent);transform:rotate(45deg);margin:0 0 12px 6px"></span>
+      <h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:30px;line-height:1.1">Keep the pieces you love close.</h2>
+      <p style="margin:0;font-size:14px;line-height:1.55;color:var(--text2)">Tap the diamond on any piece to save it here.</p>
+      <button onClick="{{ goJewelry }}" style="align-self:flex-start;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px 24px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Explore the Collection</button>
+    </div>
+  </sc-if>
+</main>
+</sc-if>
+
+<!-- ═══ ACCOUNT ═══ -->
+<sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Account" style="animation:jbFade .5s ease both;padding:24px 0 64px;display:flex;flex-direction:column;gap:24px">
+  <div style="padding:0 20px"><p style="margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Client No. JB-00214</p><h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:36px;line-height:1">Adaeze Okonkwo</h1></div>
+  <div style="display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:0 20px;border-bottom:1px solid var(--border)">
+    <sc-for list="{{ acct.tabs }}" as="t" hint-placeholder-count="6"><button onClick="{{ t.pick }}" style="flex:0 0 auto;background:none;border:none;border-bottom:1px solid {{ t.line }};margin-bottom:-1px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:{{ t.color }};padding:12px 10px;white-space:nowrap">{{ t.label }}</button></sc-for>
+  </div>
+  <div style="padding:0 20px;animation:jbRise .5s cubic-bezier(.16,1,.3,1) both">
+    <sc-if value="{{ acct.isOverview }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)">
+          <div style="background:var(--bg);padding:14px"><p style="margin:0 0 4px;font-family:Marcellus,serif;font-size:24px">3</p><p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Orders</p></div>
+          <div style="background:var(--bg);padding:14px"><p style="margin:0 0 4px;font-family:Marcellus,serif;font-size:24px">{{ wishCount }}</p><p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Saved</p></div>
+          <div style="background:var(--bg);padding:14px"><p style="margin:0 0 4px;font-family:Marcellus,serif;font-size:24px">2</p><p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Addresses</p></div>
+        </div>
+        <sc-for list="{{ acct.orders }}" as="o" hint-placeholder-count="1">
+          <button onClick="{{ o.open }}" style="display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:2px;background:var(--surface);cursor:pointer;text-align:left;color:var(--text)"><img src="{{ o.img }}" alt="" style="width:56px;height:64px;object-fit:cover"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ o.id }} · {{ o.date }}</span><span style="font-size:14px">{{ o.name }}</span><span style="font-size:12px;color:{{ o.statusColor }}">● {{ o.status }}</span></span><span style="color:var(--text2)">→</span></button>
+        </sc-for>
+        <button onClick="{{ goWishlist }}" style="display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text)"><span style="font-family:Marcellus,serif;font-size:18px">Wishlist</span><span style="color:var(--text2)">→</span></button>
+        <button onClick="{{ logout }}" style="display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text2)"><span style="font-size:14px">Log out</span></button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ acct.isOrders }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ acct.orders }}" as="o" hint-placeholder-count="3">
+          <button onClick="{{ o.open }}" style="display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:2px;background:var(--surface);cursor:pointer;text-align:left;color:var(--text)"><img src="{{ o.img }}" alt="" style="width:56px;height:64px;object-fit:cover"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ o.id }} · {{ o.date }}</span><span style="font-size:14px">{{ o.name }}</span><span style="font-size:12px;color:{{ o.statusColor }}">● {{ o.status }}</span></span><span style="font-size:13px;font-variant-numeric:tabular-nums">{{ o.totalFmt }}</span></button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ acct.isOrder }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">{{ acct.order.id }}</span><span style="font-size:12px;color:{{ acct.order.statusColor }}">● {{ acct.order.status }}</span></div>
+        <div style="display:flex;flex-direction:column;gap:0;border-left:1px solid var(--border);margin-left:5px">
+          <sc-for list="{{ acct.order.timeline }}" as="t" hint-placeholder-count="4"><div style="display:flex;gap:16px;padding:0 0 18px;margin-left:-6px"><span style="width:11px;height:11px;border-radius:50%;background:{{ t.dot }};border:1px solid var(--text);flex:0 0 auto;margin-top:3px"></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;color:{{ t.color }}">{{ t.label }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ t.when }}</span></span></div></sc-for>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:2px;background:var(--surface)"><img src="{{ acct.order.img }}" alt="" style="width:56px;height:64px;object-fit:cover"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-size:14px">{{ acct.order.name }}</span><span style="font-size:12px;color:var(--text2)">Qty 1</span></span><span style="font-size:13px;font-variant-numeric:tabular-nums">{{ acct.order.totalFmt }}</span></div>
+        <div style="font-size:13px;line-height:1.6;color:var(--text2)"><span style="display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Delivering to</span>12 Admiralty Way, Lekki Phase 1, Lagos</div>
+        <button onClick="{{ goContact }}" style="align-self:flex-start;background:none;border:none;cursor:pointer;padding:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text);border-bottom:1px solid var(--accent)">Need help with this order →</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ acct.isAddresses }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="padding:16px;border:1px solid var(--accent);border-radius:2px;background:var(--surface);display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.5;color:var(--text2)"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)">Default</span><span style="color:var(--text);font-size:14px">Home</span>12 Admiralty Way, Lekki Phase 1<br>Lagos · 0803 000 0000</div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:2px;background:var(--surface);display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.5;color:var(--text2)"><span style="color:var(--text);font-size:14px">Office</span>Plot 4, Adetokunbo Ademola, Wuse II<br>Abuja · 0803 000 0000</div>
+        <button style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:15px;border-radius:2px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer">Add Address</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ acct.isProfile }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Full name</span><input defaultValue="Adaeze Okonkwo" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Email</span><input defaultValue="adaeze@example.com" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Phone</span><input defaultValue="0803 000 0000" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+        <button onClick="{{ saveProfile }}" style="align-self:flex-start;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:15px 24px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Save</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ acct.isPrefs }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ acct.prefs }}" as="p" hint-placeholder-count="4">
+          <button onClick="{{ p.toggle }}" style="display:flex;justify-content:space-between;align-items:center;min-height:60px;padding:0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text);text-align:left"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px">{{ p.label }}</span><span style="font-size:12px;color:var(--text2)">{{ p.desc }}</span></span><span style="width:36px;height:20px;border-radius:10px;border:1px solid var(--text);position:relative;flex:0 0 auto;background:{{ p.trackBg }};transition:background .3s"><span style="position:absolute;top:3px;left:{{ p.knobLeft }};width:12px;height:12px;border-radius:50%;background:{{ p.knobBg }};transition:left .3s cubic-bezier(.16,1,.3,1)"></span></span></button>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══ FAQ ═══ -->
+<sc-if value="{{ isFaq }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="FAQ" style="animation:jbFade .5s ease both;padding:24px 0 64px;display:flex;flex-direction:column;gap:24px">
+  <div style="padding:0 20px"><p style="margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Client care</p><h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:36px;line-height:1">Questions, answered.</h1></div>
+  <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 20px">
+    <sc-for list="{{ faq.cats }}" as="c" hint-placeholder-count="9"><button onClick="{{ c.pick }}" style="flex:0 0 auto;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;border-radius:2px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }};cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for>
+  </div>
+  <div style="padding:0 20px;display:flex;flex-direction:column;border-top:1px solid var(--border);animation:jbRise .5s cubic-bezier(.16,1,.3,1) both">
+    <sc-for list="{{ faq.items }}" as="q" hint-placeholder-count="3">
+      <div style="border-bottom:1px solid var(--border)">
+        <button onClick="{{ q.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:60px;padding:14px 0;border:none;background:none;cursor:pointer;color:var(--text);text-align:left"><span style="font-family:Marcellus,serif;font-size:18px;line-height:1.3">{{ q.q }}</span><span style="font-size:18px;color:var(--muted);transform:rotate({{ q.rot }});transition:transform .4s cubic-bezier(.16,1,.3,1);flex:0 0 auto">+</span></button>
+        <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 0 20px;font-size:14px;line-height:1.6;color:var(--text2);animation:jbRise .5s cubic-bezier(.16,1,.3,1) both">{{ q.a }}</p></sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <div style="margin:16px 20px 0;padding:20px;border:1px solid var(--border);border-radius:2px;display:flex;justify-content:space-between;align-items:center;gap:12px"><span style="font-size:14px;line-height:1.4;color:var(--text2)">Still unsure? A specialist replies within the hour.</span><button onClick="{{ goContact }}" style="flex:0 0 auto;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:12px 14px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Contact</button></div>
+</main>
+</sc-if>
+
+<!-- ═══ ABOUT ═══ -->
+<sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="About" style="animation:jbFade .5s ease both;padding-bottom:64px">
+  <section style="position:relative;height:520px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 32px">
+    <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,16,.2),var(--bg))"></div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">The House · Est. Lagos</span><h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:44px;line-height:1;text-wrap:balance">Built for people who keep what they buy.</h1></div>
+  </section>
+  <section style="padding:40px 20px 0;display:flex;flex-direction:column;gap:36px">
+    <sc-for list="{{ aboutBlocks }}" as="b" hint-placeholder-count="4">
+      <div style="display:grid;grid-template-columns:48px 1fr;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);padding-top:6px">{{ b.n }}</span><div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:26px;line-height:1.15">{{ b.title }}</h2><p style="margin:0;font-size:15px;line-height:1.65;color:var(--text2)">{{ b.body }}</p></div></div>
+    </sc-for>
+    <div style="position:relative;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--border)"><img src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=900&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+    <blockquote style="margin:0;font-family:Marcellus,serif;font-size:26px;line-height:1.3;text-wrap:pretty;border-left:1px solid var(--accent);padding-left:20px">“Luxury you can experience, not just purchase.”</blockquote>
+    <button onClick="{{ goWatches }}" style="align-self:flex-start;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px 24px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Enter the Collection</button>
+  </section>
+</main>
+</sc-if>
+
+<!-- ═══ CONTACT ═══ -->
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Contact" style="animation:jbFade .5s ease both;padding:24px 20px 64px;display:flex;flex-direction:column;gap:28px">
+  <div><p style="margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Concierge · Mon–Sat 9:00–19:00 WAT</p><h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:36px;line-height:1">Speak with the house.</h1></div>
+  <button onClick="{{ whatsapp }}" style="display:flex;align-items:center;gap:16px;padding:20px;border:1px solid var(--accent);border-radius:2px;background:var(--surface);cursor:pointer;text-align:left;color:var(--text);position:relative">
+    <span style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)"></span>
+    <span style="width:40px;height:40px;border-radius:50%;border:1px solid var(--text);display:flex;align-items:center;justify-content:center;flex:0 0 auto"><span style="width:8px;height:8px;border-radius:50%;background:var(--success);animation:jbPulse 2s ease infinite"></span></span>
+    <span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-family:Marcellus,serif;font-size:20px">WhatsApp a specialist</span><span style="font-size:12px;color:var(--text2)">Typically replies in under 10 minutes</span></span><span style="color:var(--text2)">→</span>
+  </button>
+  <div style="display:flex;flex-direction:column;border-top:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">Phone</span><span>+234 800 000 0000</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">Email</span><span>hello@jewelrybox.ng</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">Instagram</span><span>@jewelrybox.ng</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">Private viewings</span><span>Lekki, Lagos · by appointment</span></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:22px">
+    <p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Or write to us</p>
+    <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Name</span><input placeholder="Your name" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Email</span><input placeholder="you@example.com" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0"></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Message</span><textarea rows="3" placeholder="How can we help?" style="font-size:15px;padding:10px 0;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);outline:none;border-radius:0;resize:none"></textarea></label>
+    <button onClick="{{ sendMessage }}" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:17px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Send</button>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══ CAMPAIGN ═══ -->
+<sc-if value="{{ isCampaign }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Campaign" style="animation:jbFade .5s ease both;padding-bottom:64px">
+  <section style="position:relative;height:620px;margin-top:-56px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 36px">
+    <img src="{{ camp.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:jbScale 2.6s cubic-bezier(.16,1,.3,1) both">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,16,.3),transparent 35%,var(--bg))"></div>
+    <div style="position:absolute;inset:68px 12px 12px;border:1px solid rgba(243,238,230,.14);pointer-events:none"></div>
+    <div style="position:absolute;top:72px;left:20px;right:20px;display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:rgba(243,238,230,.75)"><span>{{ camp.code }}</span><span>{{ camp.dates }}</span></div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">{{ camp.eyebrow }}</span><h1 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:50px;line-height:.98;text-wrap:balance">{{ camp.title }}</h1><p style="margin:0;font-size:14px;line-height:1.55;color:var(--text2)">{{ camp.intro }}</p></div>
+  </section>
+  <section style="padding:40px 20px 0;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)"><span>The edit</span><span>{{ camp.count }} pieces</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 8px">
+      <sc-for list="{{ camp.products }}" as="p" hint-placeholder-count="4">
+        <div style="grid-column:{{ p.span }};display:flex;flex-direction:column;gap:10px">
+          <button onClick="{{ p.open }}" style="position:relative;aspect-ratio:{{ p.ratio }};padding:0;border:1px solid var(--border);border-radius:2px;overflow:hidden;background:var(--surface);cursor:pointer"><img src="{{ p.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></button>
+          <button onClick="{{ p.open }}" style="background:none;border:none;padding:0;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;color:var(--text)"><span style="font-family:Marcellus,serif;font-size:16px;line-height:1.2">{{ p.name }}</span><span style="font-size:14px;font-variant-numeric:tabular-nums">{{ p.priceFmt }}</span></button>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <section style="margin:48px 20px 0;padding:28px 22px;border:1px solid var(--border);border-radius:2px;background:var(--surface);display:flex;flex-direction:column;gap:14px">
+    <h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:26px;line-height:1.15">{{ camp.noteTitle }}</h2>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:var(--text2)">{{ camp.note }}</p>
+  </section>
+  <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:24px 20px 0">
+    <sc-for list="{{ campaignLinks }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.open }}" style="flex:0 0 auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px 12px;border-radius:2px;border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══ OVERLAYS ═══ -->
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Menu" style="position:fixed;inset:0;z-index:40;display:flex;justify-content:center">
+    <div style="width:390px;box-sizing:border-box;height:100%;background:var(--bg);color:var(--text);display:flex;flex-direction:column;padding:0 20px 32px;animation:jbFade .4s ease both;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;height:56px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted)">MENU</span><button onClick="{{ closeAll }}" aria-label="Close" style="width:44px;height:44px;margin-right:-12px;background:none;border:none;cursor:pointer;color:var(--text);font-size:22px;line-height:1">×</button></div>
+      <nav style="display:flex;flex-direction:column;padding-top:24px">
+        <sc-for list="{{ menuMain }}" as="m" hint-placeholder-count="6"><button onClick="{{ m.go }}" style="display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text);text-align:left;animation:jbRise .7s cubic-bezier(.16,1,.3,1) both;animation-delay:{{ m.delay }}"><span style="font-family:Marcellus,serif;font-size:32px;line-height:1.1">{{ m.label }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ m.count }}</span></button></sc-for>
+      </nav>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding-top:28px">
+        <sc-for list="{{ menuSecondary }}" as="m" hint-placeholder-count="6"><button onClick="{{ m.go }}" style="background:none;border:none;padding:6px 0;cursor:pointer;text-align:left;font-size:14px;color:var(--text2)">{{ m.label }}</button></sc-for>
+      </div>
+      <div style="margin-top:auto;padding-top:32px;display:flex;justify-content:space-between;align-items:center"><button onClick="{{ toggleTheme }}" style="background:none;border:1px solid var(--border);border-radius:2px;cursor:pointer;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text);padding:10px 12px">{{ themeLabel }}</button><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">NGN · EN</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Search" style="position:fixed;inset:0;z-index:40;display:flex;justify-content:center">
+    <div style="width:390px;box-sizing:border-box;height:100%;background:var(--bg);color:var(--text);display:flex;flex-direction:column;padding:0 20px 32px;animation:jbFade .4s ease both;overflow-y:auto">
+      <div style="display:flex;align-items:center;gap:8px;height:56px"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--muted)"><circle cx="8" cy="8" r="6"></circle><line x1="12.5" y1="12.5" x2="17" y2="17"></line></svg><input autoFocus value="{{ query }}" onChange="{{ setQuery }}" placeholder="Search watches, rings, moissanite…" style="flex:1;font-size:17px;padding:12px 0;border:none;background:transparent;color:var(--text);outline:none;min-width:0"><button onClick="{{ closeAll }}" aria-label="Close" style="width:44px;height:44px;margin-right:-12px;background:none;border:none;cursor:pointer;color:var(--text);font-size:22px;line-height:1">×</button></div>
+      <div style="height:1px;background:var(--border);position:relative"><div style="position:absolute;left:0;top:0;height:1px;background:var(--accent);width:{{ queryBar }};transition:width .5s cubic-bezier(.16,1,.3,1)"></div></div>
+      <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+        <div style="padding-top:24px;display:flex;flex-direction:column;gap:22px;animation:jbRise .5s cubic-bezier(.16,1,.3,1) both">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-bottom:8px">Categories</span>
+            <sc-for list="{{ searchCats }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.open }}" style="display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text);text-align:left"><span style="font-family:Marcellus,serif;font-size:20px">{{ c.label }}</span><span style="color:var(--text2)">→</span></button></sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">{{ searchCount }} pieces</span>
+            <sc-for list="{{ searchResults }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.open }}" style="display:flex;gap:14px;align-items:center;padding:0;border:none;background:none;cursor:pointer;text-align:left;color:var(--text)"><img src="{{ p.img }}" alt="" style="width:56px;height:64px;object-fit:cover;border:1px solid var(--border)"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ p.brand }}</span><span style="font-size:15px">{{ p.name }}</span></span><span style="font-size:13px;font-variant-numeric:tabular-nums">{{ p.priceFmt }}</span></button></sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noQuery }}" hint-placeholder-val="{{ true }}">
+        <div style="padding-top:28px;display:flex;flex-direction:column;gap:28px">
+          <div style="display:flex;flex-direction:column;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Trending</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ trending }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.pick }}" style="font-size:12px;padding:9px 12px;border:1px solid var(--border);border-radius:2px;background:none;color:var(--text);cursor:pointer">{{ t.label }}</button></sc-for></div></div>
+          <sc-if value="{{ hasRecentSearch }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Recent</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ recentSearches }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.pick }}" style="font-size:12px;padding:9px 12px;border:1px solid var(--border);border-radius:2px;background:var(--surface);color:var(--text2);cursor:pointer">{{ t.label }}</button></sc-for></div></div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-bottom:8px">Popular</span><sc-for list="{{ popularCats }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.open }}" style="display:flex;justify-content:space-between;align-items:center;min-height:52px;padding:0;border:none;border-bottom:1px solid var(--border);background:none;cursor:pointer;color:var(--text);text-align:left"><span style="font-family:Marcellus,serif;font-size:22px">{{ c.label }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ c.count }}</span></button></sc-for></div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ cartOpen }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Cart Drawer" style="position:fixed;inset:0;z-index:40;display:flex;justify-content:center">
+    <div style="width:390px;height:100%;position:relative">
+      <button onClick="{{ closeAll }}" aria-label="Close" style="position:absolute;inset:0;border:none;background:rgba(0,0,0,.45);cursor:pointer;animation:jbFade .4s ease both"></button>
+      <aside style="position:absolute;top:0;right:0;bottom:0;width:340px;background:var(--bg);color:var(--text);border-left:1px solid var(--border);display:flex;flex-direction:column;animation:jbSlideIn .6s cubic-bezier(.16,1,.3,1) both">
+        <div style="display:flex;justify-content:space-between;align-items:center;height:56px;padding:0 20px;border-bottom:1px solid var(--border)"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted)">YOUR BAG · {{ cartCount }}</span><button onClick="{{ closeAll }}" aria-label="Close" style="width:44px;height:44px;margin-right:-12px;background:none;border:none;cursor:pointer;color:var(--text);font-size:22px;line-height:1">×</button></div>
+        <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:20px">
+            <p style="margin:0;font-family:Marcellus,serif;font-size:22px;line-height:1.2">Your collection is taking shape.</p>
+            <sc-for list="{{ cartLines }}" as="l" hint-placeholder-count="2">
+              <div style="display:flex;gap:14px;animation:jbRise .5s cubic-bezier(.16,1,.3,1) both">
+                <button onClick="{{ l.open }}" style="padding:0;border:none;background:none;cursor:pointer;flex:0 0 84px"><img src="{{ l.img }}" alt="" style="width:84px;height:104px;object-fit:cover;display:block;border:1px solid var(--border)"></button>
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ l.brand }}</span>
+                  <span style="font-family:Marcellus,serif;font-size:16px;line-height:1.2">{{ l.name }}</span>
+                  <span style="font-size:14px;font-variant-numeric:tabular-nums">{{ l.priceFmt }}</span>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto">
+                    <div style="display:flex;align-items:center;border:1px solid var(--border);border-radius:2px"><button onClick="{{ l.dec }}" style="width:36px;height:36px;background:none;border:none;cursor:pointer;color:var(--text);font-size:16px">−</button><span style="min-width:20px;text-align:center;font-size:13px;font-variant-numeric:tabular-nums">{{ l.qty }}</span><button onClick="{{ l.inc }}" style="width:36px;height:36px;background:none;border:none;cursor:pointer;color:var(--text);font-size:16px">+</button></div>
+                    <div style="display:flex;gap:10px"><button onClick="{{ l.save }}" style="background:none;border:none;cursor:pointer;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);padding:8px 0">Save</button><button onClick="{{ l.remove }}" style="background:none;border:none;cursor:pointer;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);padding:8px 0">Remove</button></div>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ hasSaved }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--border)"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Saved for later</span>
+                <sc-for list="{{ savedLines }}" as="l" hint-placeholder-count="1"><div style="display:flex;gap:12px;align-items:center"><img src="{{ l.img }}" alt="" style="width:44px;height:52px;object-fit:cover;border:1px solid var(--border)"><span style="flex:1;font-size:13px">{{ l.name }}</span><button onClick="{{ l.moveBack }}" style="background:none;border:none;cursor:pointer;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);padding:8px 0">Move to bag</button></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="padding:16px 20px 24px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px;background:var(--surface)">
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2)"><span>Subtotal</span><span style="color:var(--text);font-size:16px;font-variant-numeric:tabular-nums">{{ subtotalFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>Delivery</span><span>{{ deliveryHint }}</span></div>
+            <button onClick="{{ goCheckout }}" style="font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:17px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer;margin-top:4px">Checkout</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noCart }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:20px">
+            <span style="display:block;width:28px;height:28px;border:1px solid var(--accent);transform:rotate(45deg);margin:0 0 12px 6px"></span>
+            <h2 style="margin:0;font-family:Marcellus,serif;font-weight:400;font-size:30px;line-height:1.1">Nothing here yet.</h2>
+            <p style="margin:0;font-size:14px;line-height:1.55;color:var(--text2)">Perhaps something caught your eye?</p>
+            <button onClick="{{ goJewelryClose }}" style="align-self:flex-start;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px 22px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Explore the Collection</button>
+          </div>
+        </sc-if>
+      </aside>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ quickOpen }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Quick View" style="position:fixed;inset:0;z-index:40;display:flex;justify-content:center">
+    <div style="width:390px;height:100%;position:relative">
+      <button onClick="{{ closeAll }}" aria-label="Close" style="position:absolute;inset:0;border:none;background:rgba(0,0,0,.45);cursor:pointer;animation:jbFade .4s ease both"></button>
+      <div style="position:absolute;left:0;right:0;bottom:0;background:var(--bg);color:var(--text);border-top:1px solid var(--border);padding:12px 20px 28px;display:flex;flex-direction:column;gap:16px;animation:jbSheet .6s cubic-bezier(.16,1,.3,1) both">
+        <span style="width:36px;height:2px;background:var(--border);align-self:center"></span>
+        <div style="display:flex;gap:14px">
+          <img src="{{ qv.img }}" alt="" style="width:120px;height:150px;object-fit:cover;border:1px solid var(--border)">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">{{ qv.brand }}</span><span style="font-family:Marcellus,serif;font-size:22px;line-height:1.1">{{ qv.name }}</span><span style="font-size:16px;font-variant-numeric:tabular-nums">{{ qv.priceFmt }}</span><span style="font-size:11px;color:{{ qv.availColor }}">● {{ qv.avail }}</span><p style="margin:4px 0 0;font-size:13px;line-height:1.5;color:var(--text2)">{{ qv.short }}</p></div>
+        </div>
+        <div style="display:flex;gap:8px"><button onClick="{{ qv.add }}" style="flex:1;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:16px;border-radius:2px;background:var(--text);color:var(--bg);border:none;cursor:pointer">Add to Bag</button><button onClick="{{ qv.open }}" style="flex:1;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:15px;border-radius:2px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer">View Piece →</button></div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:60;padding:12px 16px;background:var(--text);color:var(--bg);border-radius:2px;font-size:12px;letter-spacing:.04em;box-shadow:0 8px 32px rgba(0,0,0,.3);animation:jbRise .5s cubic-bezier(.16,1,.3,1) both;white-space:nowrap">{{ toast }}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'dark'|'light'&quot;,&quot;section&quot;:&quot;Theme&quot;}}">
+class Component extends DCLogic {
+  state = {
+    booting: true, theme: null, route: { name: 'home', params: {} }, history: [],
+    menuOpen: false, searchOpen: false, cartOpen: false, quick: null,
+    cart: [], saved: [], wishlist: ['r1'], recent: [], recentSearches: [], query: '',
+    filter: 'all', sortIdx: 0, gallery: 0, openSec: 'details', faqCat: 'Orders', faqOpen: 0,
+    coStep: 1, coForm: { name: '', email: '', phone: '', state: '', city: '', address: '', notes: '', promo: '', pay: 'paystack' }, coErr: {}, promoMsg: '', discount: 0,
+    prefs: { news: true, drops: true, whatsapp: false, sms: false }, toast: null,
+  };
+  heroImg = React.createRef();
+  componentDidMount() {
+    this._boot = setTimeout(() => this.setState({ booting: false }), 1500);
+    this._onScroll = () => {
+      const el = this.heroImg.current; if (!el) return;
+      const y = Math.min(window.scrollY, 720);
+      el.style.transform = `translateY(${y * 0.3}px) scale(${1 + y / 2600})`;
+      el.style.opacity = String(1 - y / 1000);
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+  }
+  componentWillUnmount() { clearTimeout(this._boot); clearTimeout(this._toast); window.removeEventListener('scroll', this._onScroll); }
+
+  U(id, w = 900) { return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=80`; }
+  fmt(n) { return '₦' + n.toLocaleString('en-NG'); }
+  get products() {
+    if (this._products) return this._products;
+    const U = id => this.U(id);
+    const W = 'House Watch', J = 'JewelryBox Atelier';
+    this._products = [
+      { id: 'w1', cat: 'watches', brand: W, name: 'Meridian Automatic 40', price: 1850000, avail: 'In stock', tags: ['new', 'him', 'best'], ref: 'MA-40-OB', imgs: [U('1524592094714-0f0654e20314'), U('1547996160-81dfa63595aa'), U('1434056886845-dac89ffe9b56'), U('1524805444758-089113d48a6d')], specs: [['Movement', 'Automatic · 28,800 vph'], ['Case', '40mm · 316L steel'], ['Crystal', 'Sapphire, AR coated'], ['Water resistance', '100m']], desc: 'A 40mm automatic on a brushed steel bracelet, with a domed sapphire crystal and a dial the colour of wet slate. Finished in-house; regulated to within five seconds a day.' },
+      { id: 'w2', cat: 'watches', brand: W, name: 'Lagos GMT 41', price: 2400000, avail: '2 left', tags: ['him', 'statement'], ref: 'LG-41-GM', imgs: [U('1539874754764-5a96559165b0'), U('1524592094714-0f0654e20314'), U('1508057198894-247b23fe5ade')], specs: [['Movement', 'Automatic GMT'], ['Case', '41mm · steel'], ['Crystal', 'Sapphire'], ['Water resistance', '200m']], desc: 'Two time zones, one glance. Built for the Lagos–London commute with a 24-hour bezel and a lume that reads in a dark cabin.' },
+      { id: 'w3', cat: 'watches', brand: W, name: 'Ivory Dress 36', price: 980000, avail: 'In stock', tags: ['her', 'everyday', 'gift'], ref: 'ID-36-IV', imgs: [U('1508057198894-247b23fe5ade'), U('1523170335258-f5ed11844a49'), U('1434056886845-dac89ffe9b56')], specs: [['Movement', 'Swiss quartz'], ['Case', '36mm · rose-tone steel'], ['Strap', 'Ivory calf leather'], ['Water resistance', '50m']], desc: 'Slim, quiet, and correct under a cuff. An ivory lacquer dial with applied indices on a matching leather strap.' },
+      { id: 'w4', cat: 'watches', brand: W, name: 'Obsidian Chrono 42', price: 3150000, avail: 'Made to order', tags: ['statement', 'him', 'new'], ref: 'OC-42-BK', imgs: [U('1594534475808-b18fc33b045e'), U('1547996160-81dfa63595aa'), U('1539874754764-5a96559165b0')], specs: [['Movement', 'Automatic chronograph'], ['Case', '42mm · black DLC steel'], ['Crystal', 'Sapphire, box'], ['Water resistance', '100m']], desc: 'Matte black on matte black. A column-wheel chronograph in a DLC-coated case, built in a run of fifty.' },
+      { id: 'r1', cat: 'rings', brand: J, name: 'Solitaire 1.5ct Moissanite', price: 365000, was: 420000, avail: 'In stock', tags: ['moissanite', 'her', 'best', 'gift', 'wedding', 'valentine'], ref: 'SR-15-WG', imgs: [U('1605100804763-247f67b3557e'), U('1573408301185-9146fe634ad0'), U('1515562141207-7a88fb7ce338')], specs: [['Stone', '1.5ct round moissanite · D–E'], ['Metal', '14k white gold'], ['Setting', 'Six-prong'], ['Band', '1.8mm']], desc: 'A round brilliant moissanite in a six-prong crown that lifts the stone to the light. Sized to order; resizing included for one year.' },
+      { id: 'r2', cat: 'rings', brand: J, name: 'Eternity Band', price: 210000, avail: 'In stock', tags: ['moissanite', 'her', 'wedding', 'everyday'], ref: 'EB-02-YG', imgs: [U('1602751584552-8ba73aad10e1'), U('1515562141207-7a88fb7ce338')], specs: [['Stones', '24 × 2mm moissanite'], ['Metal', '14k yellow gold'], ['Setting', 'Shared prong'], ['Width', '2.2mm']], desc: 'Stones the whole way round, set low enough to wear every day beside a solitaire or alone.' },
+      { id: 'n1', cat: 'necklaces', brand: J, name: 'Pendant Chain 45cm', price: 145000, avail: 'In stock', tags: ['her', 'everyday', 'gift', 'under', 'valentine'], ref: 'PC-45-YG', imgs: [U('1611652022419-a9419f74343d'), U('1601121141461-9d6647bca1ed')], specs: [['Stone', '0.5ct moissanite'], ['Metal', '14k yellow gold'], ['Length', '45cm + 5cm extender'], ['Clasp', 'Lobster, JB engraved']], desc: 'A single bezel-set stone on a fine cable chain. Sits at the collarbone; layers under anything longer.' },
+      { id: 'n2', cat: 'necklaces', brand: J, name: 'Tennis Necklace', price: 890000, avail: '2 left', tags: ['statement', 'her', 'moissanite', 'wedding'], ref: 'TN-42-WG', imgs: [U('1601121141461-9d6647bca1ed'), U('1611652022419-a9419f74343d')], specs: [['Stones', '86 × 3mm moissanite'], ['Metal', '14k white gold'], ['Length', '42cm'], ['Clasp', 'Box, double safety']], desc: 'Eighty-six matched stones in a flexible four-prong line. The piece that makes a plain dress a decision.' },
+      { id: 'b1', cat: 'bracelets', brand: J, name: 'Cuff Bracelet', price: 120000, avail: 'In stock', tags: ['everyday', 'him', 'her', 'under', 'gift'], ref: 'CB-01-ST', imgs: [U('1588444837495-c6cfeb53f32d'), U('1602751584552-8ba73aad10e1')], specs: [['Metal', 'Sterling silver, rhodium'], ['Width', '6mm'], ['Fit', 'Open cuff, adjustable'], ['Finish', 'Brushed']], desc: 'A brushed silver cuff with a hidden JB monogram on the inner face. Wears in, not out.' },
+      { id: 'b2', cat: 'bracelets', brand: J, name: 'Tennis Bracelet', price: 480000, avail: 'In stock', tags: ['moissanite', 'her', 'gift', 'valentine', 'best'], ref: 'TB-18-WG', imgs: [U('1617038220319-276d3cfab638'), U('1588444837495-c6cfeb53f32d')], specs: [['Stones', '42 × 3mm moissanite'], ['Metal', '14k white gold'], ['Length', '18cm'], ['Clasp', 'Box, double safety']], desc: 'Forty-two stones in a line that moves with the wrist. Matched within one colour grade.' },
+      { id: 'e1', cat: 'earrings', brand: J, name: 'Moissanite Studs 1ct', price: 95000, avail: 'In stock', tags: ['moissanite', 'her', 'everyday', 'under', 'gift', 'best', 'valentine'], ref: 'MS-10-WG', imgs: [U('1611591437281-460bfbe1220a'), U('1573408301185-9146fe634ad0')], specs: [['Stones', '2 × 0.5ct round moissanite'], ['Metal', '14k white gold'], ['Setting', 'Four-prong martini'], ['Backs', 'Screw']], desc: 'The pair that stays in. Half a carat each, screw backs, and enough fire to catch across a room.' },
+      { id: 'e2', cat: 'earrings', brand: J, name: 'Drop Earrings', price: 160000, avail: 'In stock', tags: ['her', 'statement', 'gift', 'wedding'], ref: 'DE-02-YG', imgs: [U('1611085583191-a3b181a88401'), U('1611591437281-460bfbe1220a')], specs: [['Stones', '2 × pear moissanite'], ['Metal', '14k yellow gold'], ['Drop', '28mm'], ['Backs', 'Lever']], desc: 'Pear-cut stones on a slim gold drop. Made for the occasions that end late.' },
+    ];
+    return this._products;
+  }
+  byId(id) { return this.products.find(p => p.id === id); }
+
+  nav(name, params = {}) {
+    clearTimeout(this._toast);
+    this.setState(s => ({ route: { name, params }, history: [...s.history, s.route], menuOpen: false, searchOpen: false, cartOpen: false, quick: null, gallery: 0, filter: name === 'category' ? 'all' : s.filter, coStep: name === 'checkout' ? 1 : s.coStep, faqOpen: 0 }));
+    window.scrollTo(0, 0);
+  }
+  back() { this.setState(s => { const h = [...s.history]; const prev = h.pop() || { name: 'home', params: {} }; return { route: prev, history: h }; }); window.scrollTo(0, 0); }
+  toast(msg) { clearTimeout(this._toast); this.setState({ toast: msg }); this._toast = setTimeout(() => this.setState({ toast: null }), 2200); }
+  addToCart(id, open = true) {
+    this.setState(s => { const c = s.cart.find(x => x.id === id); return { cart: c ? s.cart.map(x => x.id === id ? { ...x, qty: x.qty + 1 } : x) : [...s.cart, { id, qty: 1 }], cartOpen: open, quick: null }; });
+    if (!open) this.toast('Added to your bag');
+  }
+  toggleWish(id) { const has = this.state.wishlist.includes(id); this.setState(s => ({ wishlist: has ? s.wishlist.filter(x => x !== id) : [...s.wishlist, id] })); this.toast(has ? 'Removed from wishlist' : 'Saved to wishlist'); }
+  openProduct(id) { this.setState(s => ({ recent: [id, ...s.recent.filter(x => x !== id)].slice(0, 6) })); this.nav('pdp', { id }); }
+
+  enrich(p, i) {
+    const wished = this.state.wishlist.includes(p.id);
+    return { ...p, idx: String(i + 1).padStart(2, '0'), priceFmt: this.fmt(p.price), wasFmt: p.was ? this.fmt(p.was) : '', hasWas: !!p.was, img: p.imgs[0],
+      availColor: p.avail === 'In stock' ? 'var(--success)' : p.avail === 'Made to order' ? 'var(--muted)' : 'var(--warning)',
+      wishBg: wished ? '#F3EEE6' : 'transparent', open: () => this.openProduct(p.id), toggleWish: () => this.toggleWish(p.id),
+      quick: () => this.setState({ quick: p.id }), add: () => this.addToCart(p.id, false),
+      hasBadge: p.tags.includes('new') || !!p.was, badge: p.was ? 'Edit price' : 'New',
+      span: i % 5 === 0 ? '1 / -1' : 'auto', ratio: i % 5 === 0 ? '4/3' : '4/5' };
+  }
+
+  renderVals() {
+    const s = this.state, P = this.products, r = s.route;
+    const theme = s.theme ?? this.props.theme ?? 'dark';
+    const cats = {
+      watches: { title: 'Watches', eyebrow: 'The Watch Edit · 24 pieces', intro: 'Automatic, quartz, dress and sport. Every movement checked before it ships.', img: this.U('1547996160-81dfa63595aa'), f: p => p.cat === 'watches' },
+      jewelry: { title: 'Jewelry', eyebrow: 'Fine Jewelry · 96 pieces', intro: 'Rings, necklaces, bracelets and earrings, made to be layered and kept.', img: this.U('1601121141461-9d6647bca1ed'), f: p => p.cat !== 'watches' },
+      moissanite: { title: 'Moissanite', eyebrow: 'Lab-created · D–F colour', intro: 'More fire than diamond, a hardness of 9.25, and a price that lets you choose size.', img: this.U('1573408301185-9146fe634ad0'), f: p => p.tags.includes('moissanite') },
+      rings: { title: 'Rings', eyebrow: 'Jewelry · Rings', intro: 'Solitaires, bands and stacks. Resizing included for a year.', img: this.U('1605100804763-247f67b3557e'), f: p => p.cat === 'rings' },
+      necklaces: { title: 'Necklaces', eyebrow: 'Jewelry · Necklaces', intro: 'Pendants that sit at the collarbone; lines that start conversations.', img: this.U('1611652022419-a9419f74343d'), f: p => p.cat === 'necklaces' },
+      bracelets: { title: 'Bracelets', eyebrow: 'Jewelry · Bracelets', intro: 'Cuffs and tennis lines, sized to the wrist.', img: this.U('1588444837495-c6cfeb53f32d'), f: p => p.cat === 'bracelets' },
+      earrings: { title: 'Earrings', eyebrow: 'Jewelry · Earrings', intro: 'Studs that stay in; drops for evenings that end late.', img: this.U('1611591437281-460bfbe1220a'), f: p => p.cat === 'earrings' },
+      gifts: { title: 'Gifts', eyebrow: 'Curated · Gifting', intro: 'Pieces that arrive boxed, sealed and ready to be opened by someone else.', img: this.U('1535632066927-ab7c9ab60908'), f: p => p.tags.includes('gift') },
+      new: { title: 'New Arrivals', eyebrow: 'This month', intro: 'The latest additions to the house.', img: this.U('1594534475808-b18fc33b045e'), f: p => p.tags.includes('new') },
+      best: { title: 'Best Sellers', eyebrow: 'Most kept', intro: 'The pieces our clients return for.', img: this.U('1524592094714-0f0654e20314'), f: p => p.tags.includes('best') },
+      her: { title: 'For Her', eyebrow: 'Curated', intro: 'Chosen for her, from studs to statements.', img: this.U('1602751584552-8ba73aad10e1'), f: p => p.tags.includes('her') },
+      him: { title: 'For Him', eyebrow: 'Curated', intro: 'Watches and cuffs with weight to them.', img: this.U('1523170335258-f5ed11844a49'), f: p => p.tags.includes('him') },
+      everyday: { title: 'Everyday Luxury', eyebrow: 'Curated', intro: 'Worn daily. Noticed daily.', img: this.U('1611652022419-a9419f74343d'), f: p => p.tags.includes('everyday') },
+      statement: { title: 'Statement Pieces', eyebrow: 'Curated', intro: 'For the nights that need one decision.', img: this.U('1601121141461-9d6647bca1ed'), f: p => p.tags.includes('statement') },
+      under: { title: 'Under ₦100,000', eyebrow: 'Curated', intro: 'Accessible entries to the house.', img: this.U('1611591437281-460bfbe1220a'), f: p => p.price < 200000 },
+    };
+    const catKey = r.params.cat || 'watches';
+    const cat = cats[catKey] || cats.watches;
+    const filters = [['all', 'All'], ['under', 'Under ₦200k'], ['moissanite', 'Moissanite'], ['stock', 'In stock'], ['new', 'New']].map(([k, label]) => ({ label, pick: () => this.setState({ filter: k }), bg: s.filter === k ? 'var(--text)' : 'transparent', fg: s.filter === k ? 'var(--bg)' : 'var(--text2)', border: s.filter === k ? 'var(--text)' : 'var(--border)' }));
+    const sorts = [['Featured', null], ['Price ↑', (a, b) => a.price - b.price], ['Price ↓', (a, b) => b.price - a.price]];
+    let results = P.filter(cat.f).filter(p => s.filter === 'all' || (s.filter === 'under' && p.price < 200000) || (s.filter === 'moissanite' && p.tags.includes('moissanite')) || (s.filter === 'stock' && p.avail === 'In stock') || (s.filter === 'new' && p.tags.includes('new')));
+    if (sorts[s.sortIdx][1]) results = [...results].sort(sorts[s.sortIdx][1]);
+    results = results.map((p, i) => this.enrich(p, i));
+
+    const prod = this.byId(r.params.id) || P[0];
+    const secs = [['details', 'The Details', prod.desc], ['craft', 'Craftsmanship', 'Assembled and finished by hand in our Lagos atelier, then inspected under 10× magnification before boxing.'], ['receive', 'What You\'ll Receive', 'The piece in the JewelryBox case, a signed certificate of authenticity, a care cloth, and a personal note from the house.'], ['shipping', 'Shipping & Delivery', 'Insured delivery across Nigeria: Lagos 1–2 working days, other states 2–4. Free on orders above ₦1,000,000.'], ['auth', 'Authenticity', 'Every watch is verified by serial and movement; every stone is certified for colour and clarity. Returns within 14 days, unworn.'], ['care', 'Care & Warranty', 'Two-year warranty on movement and settings. Complimentary cleaning and inspection, in person or by courier, for life.']];
+    const pdp = { ...this.enrich(prod, 0), currentImg: prod.imgs[Math.min(s.gallery, prod.imgs.length - 1)], galleryPos: `${String(s.gallery + 1).padStart(2, '0')} / ${String(prod.imgs.length).padStart(2, '0')}`,
+      installment: this.fmt(Math.round(prod.price / 3)), specs: prod.specs.map(([k, v]) => ({ k, v })),
+      thumbs: prod.imgs.map((img, i) => ({ img, pick: () => this.setState({ gallery: i }), border: i === s.gallery ? 'var(--text)' : 'var(--border)', opacity: i === s.gallery ? 1 : .55 })),
+      sections: secs.map(([k, title, body]) => ({ title, body, open: s.openSec === k, rot: s.openSec === k ? '45deg' : '0deg', toggle: () => this.setState({ openSec: s.openSec === k ? null : k }) })),
+      related: P.filter(p => p.id !== prod.id && (p.cat === prod.cat || p.tags.some(t => prod.tags.includes(t)))).slice(0, 4).map((p, i) => this.enrich(p, i)),
+      zoom: () => this.toast('Zoom & 360° viewer — hook to product media'), addToBag: () => this.addToCart(prod.id), buyNow: () => { this.addToCart(prod.id, false); this.nav('checkout'); } };
+
+    const cartLines = s.cart.map(c => { const p = this.byId(c.id); return { ...this.enrich(p, 0), qty: c.qty, lineFmt: this.fmt(p.price * c.qty),
+      inc: () => this.setState(st => ({ cart: st.cart.map(x => x.id === c.id ? { ...x, qty: x.qty + 1 } : x) })),
+      dec: () => this.setState(st => ({ cart: st.cart.map(x => x.id === c.id ? { ...x, qty: Math.max(1, x.qty - 1) } : x) })),
+      remove: () => this.setState(st => ({ cart: st.cart.filter(x => x.id !== c.id) })),
+      save: () => this.setState(st => ({ cart: st.cart.filter(x => x.id !== c.id), saved: [...st.saved, c.id] })) }; });
+    const savedLines = s.saved.map(id => ({ ...this.enrich(this.byId(id), 0), moveBack: () => this.setState(st => ({ saved: st.saved.filter(x => x !== id), cart: [...st.cart, { id, qty: 1 }] })) }));
+    const subtotal = s.cart.reduce((a, c) => a + this.byId(c.id).price * c.qty, 0);
+    const cartCount = s.cart.reduce((a, c) => a + c.qty, 0);
+    const isLagos = s.coForm.state === 'Lagos';
+    const delivery = subtotal >= 1000000 || subtotal === 0 ? 0 : isLagos ? 5000 : 12000;
+    const total = Math.max(0, subtotal - s.discount + delivery);
+
+    const F = s.coForm, E = s.coErr;
+    const setF = k => e => this.setState(st => ({ coForm: { ...st.coForm, [k]: e.target.value }, coErr: { ...st.coErr, [k]: false } }));
+    const errColor = k => E[k] ? 'var(--error)' : 'var(--muted)';
+    const validate = () => {
+      const err = {};
+      if (s.coStep === 1) { if (!F.name.trim()) err.name = true; if (!/^\S+@\S+\.\S+$/.test(F.email)) err.email = true; if (F.phone.replace(/\D/g, '').length !== 11) err.phone = true; }
+      if (s.coStep === 2) { if (!F.state) err.state = true; if (!F.city.trim()) err.city = true; if (!F.address.trim()) err.address = true; }
+      return err;
+    };
+    const co = { step: s.coStep, isInfo: s.coStep === 1, isDelivery: s.coStep === 2, isPayment: s.coStep === 3, isDone: s.coStep === 4, notDone: s.coStep < 4,
+      title: ['Who is this for?', 'Where should it go?', 'How would you like to pay?'][s.coStep - 1] || '',
+      cta: s.coStep === 3 ? `Pay ${this.fmt(total)}` : 'Continue', bars: [1, 2, 3].map(n => n <= s.coStep ? 'var(--text)' : 'var(--border)'),
+      form: F, set: { name: setF('name'), email: setF('email'), phone: setF('phone'), state: setF('state'), city: setF('city'), address: setF('address'), notes: setF('notes'), promo: setF('promo') },
+      err: { phone: !!E.phone, nameColor: errColor('name'), emailColor: errColor('email'), phoneColor: errColor('phone'), stateColor: errColor('state'), cityColor: errColor('city'), addressColor: errColor('address') },
+      states: ['Abia', 'Abuja (FCT)', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara'],
+      eta: !F.state ? 'Select a state' : isLagos ? '1–2 working days' : '2–4 working days',
+      payOptions: [['paystack', 'Paystack', 'Card, bank transfer, USSD'], ['flutterwave', 'Flutterwave', 'Card, bank, mobile money'], ['transfer', 'Direct bank transfer', 'Account details shown after order']].map(([k, name, desc]) => ({ name, desc, pick: () => this.setState(st => ({ coForm: { ...st.coForm, pay: k } })), border: F.pay === k ? 'var(--text)' : 'var(--border)', dot: F.pay === k ? 'var(--text)' : 'transparent' })),
+      applyPromo: () => { const ok = F.promo.trim().toUpperCase() === 'HOUSE10'; this.setState({ discount: ok ? Math.round(subtotal * .1) : 0, promoMsg: ok ? '10% applied.' : 'Code not recognised. Try HOUSE10.' }); },
+      promoMsgShow: !!s.promoMsg, promoMsg: s.promoMsg, promoColor: s.discount ? 'var(--success)' : 'var(--error)', hasDiscount: s.discount > 0, discountFmt: this.fmt(s.discount),
+      deliveryFmt: delivery === 0 ? (subtotal ? 'Complimentary' : '—') : this.fmt(delivery), totalFmt: this.fmt(total),
+      next: () => { const err = validate(); if (Object.keys(err).length) { this.setState({ coErr: err }); return; } if (s.coStep === 3) { this.setState({ coStep: 4, cart: [], discount: 0, promoMsg: '' }); window.scrollTo(0, 0); return; } this.setState({ coStep: s.coStep + 1 }); window.scrollTo(0, 0); } };
+
+    const orders = [
+      { id: 'JB-26-0392', date: '14 Sep 2026', pid: 'w1', status: 'In transit', statusColor: 'var(--warning)', done: 2 },
+      { id: 'JB-26-0311', date: '02 Aug 2026', pid: 'e1', status: 'Delivered', statusColor: 'var(--success)', done: 4 },
+      { id: 'JB-26-0207', date: '19 May 2026', pid: 'n1', status: 'Delivered', statusColor: 'var(--success)', done: 4 },
+    ].map(o => { const p = this.byId(o.pid); return { ...o, name: p.name, img: p.imgs[0], totalFmt: this.fmt(p.price), open: () => this.nav('account', { tab: 'order', id: o.id }),
+      timeline: [['Order placed', o.date], ['Sealed & insured', o.date], ['Dispatched', 'Next day'], ['Delivered', o.done === 4 ? 'Signed for' : 'Expected soon']].map(([label, when], i) => ({ label, when, dot: i < o.done ? 'var(--text)' : 'transparent', color: i < o.done ? 'var(--text)' : 'var(--muted)' })) }; });
+    const tab = r.params.tab || 'overview';
+    const order = orders.find(o => o.id === r.params.id) || orders[0];
+    const acct = { isOverview: tab === 'overview', isOrders: tab === 'orders', isOrder: tab === 'order', isAddresses: tab === 'addresses', isProfile: tab === 'profile', isPrefs: tab === 'prefs', orders, order,
+      tabs: [['overview', 'Overview'], ['orders', 'Orders'], ['addresses', 'Addresses'], ['profile', 'Profile'], ['prefs', 'Preferences']].map(([k, label]) => ({ label, pick: () => this.setState({ route: { name: 'account', params: { tab: k } } }), line: (tab === k || (k === 'orders' && tab === 'order')) ? 'var(--text)' : 'transparent', color: (tab === k || (k === 'orders' && tab === 'order')) ? 'var(--text)' : 'var(--muted)' })),
+      prefs: [['news', 'Letters from the house', 'New pieces and previews, twice a month'], ['drops', 'Restock alerts', 'When a saved piece returns'], ['whatsapp', 'WhatsApp updates', 'Order status on WhatsApp'], ['sms', 'SMS', 'Delivery day only']].map(([k, label, desc]) => ({ label, desc, toggle: () => this.setState(st => ({ prefs: { ...st.prefs, [k]: !st.prefs[k] } })), trackBg: s.prefs[k] ? 'var(--text)' : 'transparent', knobLeft: s.prefs[k] ? '19px' : '3px', knobBg: s.prefs[k] ? 'var(--bg)' : 'var(--text)' })) };
+
+    const faqData = { Orders: [['Can I change an order after placing it?', 'Yes, within two hours of placing it, before it is sealed. Message us on WhatsApp with your order number.'], ['Do you offer engraving?', 'Initials or a date on most rings, cuffs and watch casebacks. Add it at checkout; it adds two working days.']], Delivery: [['How long does delivery take?', 'Lagos: 1–2 working days. All other states: 2–4. Every parcel is insured and signed for.'], ['Is delivery free?', 'Complimentary on orders above ₦1,000,000. Otherwise ₦5,000 in Lagos and ₦12,000 elsewhere.']], Payment: [['Which payment methods do you accept?', 'Cards, bank transfer and USSD via Paystack or Flutterwave, plus direct bank transfer.'], ['Can I pay in instalments?', 'Three equal payments on pieces above ₦300,000. The piece ships after the first payment clears.']], Returns: [['What is your return policy?', 'Fourteen days, unworn, in the original case with certificate. Made-to-order and engraved pieces are final.'], ['How do I start a return?', 'From your account, open the order and choose Return. We arrange insured collection.']], Watches: [['Are your watches authentic?', 'Every watch is verified by serial number and movement inspection before it is listed, and again before it ships.'], ['Do you service watches?', 'Yes. Complimentary inspection for life; full service at cost, with a written estimate first.']], Jewelry: [['What metals do you use?', '14k and 18k gold, platinum, and rhodium-plated sterling silver. Metal is stated on every piece.'], ['Can I resize a ring?', 'Once, free, within the first year. After that at cost.']], Moissanite: [['Is moissanite a real gemstone?', 'Yes. Silicon carbide, first found in a meteorite, now lab-created. It is not a diamond imitation; it is its own stone, with more fire.'], ['Will it cloud or fade?', 'No. Moissanite is stable, 9.25 on the Mohs scale, and holds its brilliance for life.']], Warranty: [['What does the warranty cover?', 'Two years on movements, settings and clasps under normal wear. It does not cover loss or damage from impact.'], ['How do I make a claim?', 'Send photos on WhatsApp. If covered, we collect, repair and return at no cost.']], Care: [['How should I clean my pieces?', 'Warm water, a drop of mild soap, a soft brush. Dry with the cloth we include. Avoid chlorine and ultrasonic cleaners on set stones.'], ['How should I store a watch?', 'In its case, away from magnets and direct sun. Wind automatics weekly if not worn.']] };
+    const faq = { cats: Object.keys(faqData).map(k => ({ label: k, pick: () => this.setState({ faqCat: k, faqOpen: 0 }), bg: s.faqCat === k ? 'var(--text)' : 'transparent', fg: s.faqCat === k ? 'var(--bg)' : 'var(--text2)', border: s.faqCat === k ? 'var(--text)' : 'var(--border)' })),
+      items: (faqData[s.faqCat] || []).map(([q, a], i) => ({ q, a, open: s.faqOpen === i, rot: s.faqOpen === i ? '45deg' : '0deg', toggle: () => this.setState({ faqOpen: s.faqOpen === i ? -1 : i }) })) };
+
+    const camps = {
+      valentine: { code: 'CAMPAIGN · VAL-26', dates: '01 — 14 FEB', eyebrow: 'The Valentine\'s Collection', title: 'Say it in stone.', intro: 'Pieces that arrive sealed, insured, and on time for the fourteenth.', img: this.U('1605100804763-247f67b3557e'), tag: 'valentine', noteTitle: 'Gift-wrapped by default', note: 'Every Valentine\'s piece ships in the JewelryBox case with a hand-written card. Add the message at checkout; we do the rest.' },
+      wedding: { code: 'CAMPAIGN · WED-26', dates: 'ALL SEASON', eyebrow: 'The Wedding Edit', title: 'For the promise, and the years after.', intro: 'Solitaires, bands and the pieces that finish the day.', img: this.U('1602751584552-8ba73aad10e1'), tag: 'wedding', noteTitle: 'Private viewings', note: 'Book an hour in Lekki to see stones side by side under daylight. Bring whoever needs to be there.' },
+      gifting: { code: 'CAMPAIGN · GIFT', dates: 'YEAR ROUND', eyebrow: 'Gifting', title: 'Chosen for someone else.', intro: 'Pieces that need no explanation and no receipt.', img: this.U('1535632066927-ab7c9ab60908'), tag: 'gift', noteTitle: 'Exchanges, quietly', note: 'Any gift can be exchanged within thirty days, no questions, no notification to the giver.' },
+      newarrivals: { code: 'CAMPAIGN · NEW', dates: 'SEP 2026', eyebrow: 'New Arrivals', title: 'This month, at the house.', intro: 'The latest additions, photographed the week they arrived.', img: this.U('1594534475808-b18fc33b045e'), tag: 'new', noteTitle: 'First to know', note: 'Clients on the letter see new pieces three days before they appear here.' },
+      watchedit: { code: 'CAMPAIGN · WATCH', dates: 'SS·26', eyebrow: 'The Watch Edit', title: 'Chosen for the wrist.', intro: 'Four references, one standard.', img: this.U('1547996160-81dfa63595aa'), tag: 'him', noteTitle: 'Verified, then verified again', note: 'Serial, movement and case are checked on arrival and before dispatch. The report ships with the watch.' },
+    };
+    const campKey = r.params.key || 'valentine';
+    const c = camps[campKey] || camps.valentine;
+    const campProducts = P.filter(p => p.tags.includes(c.tag)).map((p, i) => this.enrich(p, i));
+    const camp = { ...c, products: campProducts, count: String(campProducts.length).padStart(2, '0') };
+
+    const q = s.query.trim().toLowerCase();
+    const searchResults = q ? P.filter(p => (p.name + ' ' + p.cat + ' ' + p.brand + ' ' + p.tags.join(' ') + ' ' + p.specs.map(x => x.join(' ')).join(' ') + ' ' + p.desc).toLowerCase().includes(q)).map((p, i) => this.enrich(p, i)) : [];
+    const searchCats = q ? Object.keys(cats).filter(k => (cats[k].title + ' ' + k).toLowerCase().includes(q) || searchResults.some(p => p.cat === k)).slice(0, 3).map(k => ({ label: cats[k].title, open: () => this.nav('category', { cat: k }) })) : [];
+    const pickQ = label => () => this.setState(st => ({ query: label, recentSearches: [label, ...st.recentSearches.filter(x => x !== label)].slice(0, 4) }));
+
+    const go = (name, params) => () => this.nav(name, params);
+    const curated = [['her', 'For Her', '48'], ['him', 'For Him', '36'], ['everyday', 'Everyday Luxury', '52'], ['statement', 'Statement Pieces', '19'], ['gifts', 'Gifts', '40'], ['under', 'Under ₦100,000', '27'], ['moissanite', 'Moissanite', '33'], ['watches', 'Luxury Watches', '24']].map(([k, name, count]) => ({ name, count, open: go('category', { cat: k }) }));
+
+    return {
+      booting: s.booting, theme, themeDot: theme === 'dark' ? 'var(--text)' : 'transparent', themeLabel: theme === 'dark' ? 'Dark · switch to light' : 'Light · switch to dark',
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      isHome: r.name === 'home', isCategory: r.name === 'category', isPdp: r.name === 'pdp', isCheckout: r.name === 'checkout', isWishlist: r.name === 'wishlist', isAccount: r.name === 'account', isFaq: r.name === 'faq', isAbout: r.name === 'about', isContact: r.name === 'contact', isCampaign: r.name === 'campaign',
+      showBack: r.name !== 'home', showMenuBtn: r.name === 'home', back: () => this.back(),
+      menuOpen: s.menuOpen, searchOpen: s.searchOpen, cartOpen: s.cartOpen, quickOpen: !!s.quick,
+      openMenu: () => this.setState({ menuOpen: true }), openSearch: () => this.setState({ searchOpen: true }), openCart: () => this.setState({ cartOpen: true }),
+      closeAll: () => this.setState({ menuOpen: false, searchOpen: false, cartOpen: false, quick: null }),
+      goHome: go('home'), goWatches: go('category', { cat: 'watches' }), goJewelry: go('category', { cat: 'jewelry' }), goMoissanite: go('category', { cat: 'moissanite' }), goWishlist: go('wishlist'), goContact: go('contact'), goOrders: go('account', { tab: 'orders' }), goCheckout: go('checkout'), goJewelryClose: go('category', { cat: 'jewelry' }),
+      heroImg: this.heroImg, featured: P.filter(p => p.cat === 'watches').map((p, i) => this.enrich(p, i)), curated,
+      footerCols: [
+        { title: 'Shop', links: [['Watches', go('category', { cat: 'watches' })], ['Jewelry', go('category', { cat: 'jewelry' })], ['Moissanite', go('category', { cat: 'moissanite' })], ['Gifts', go('category', { cat: 'gifts' })], ['New Arrivals', go('category', { cat: 'new' })]] },
+        { title: 'Client care', links: [['FAQ', go('faq')], ['Delivery & Returns', go('faq')], ['Warranty & Care', go('faq')], ['Contact', go('contact')]] },
+        { title: 'House', links: [['About', go('about')], ['The Wedding Edit', go('campaign', { key: 'wedding' })], ['Valentine\'s', go('campaign', { key: 'valentine' })], ['Gifting', go('campaign', { key: 'gifting' })]] },
+        { title: 'You', links: [['Account', go('account')], ['Orders', go('account', { tab: 'orders' })], ['Wishlist', go('wishlist')]] },
+      ].map(c => ({ title: c.title, links: c.links.map(([label, g]) => ({ label, go: g })) })),
+      subscribe: () => this.toast('Welcome to the house.'),
+      cat, filters, results, resultCount: String(results.length).padStart(2, '0'), loadedPct: '100%', sortLabel: sorts[s.sortIdx][0], cycleSort: () => this.setState({ sortIdx: (s.sortIdx + 1) % sorts.length }),
+      recent: s.recent.filter(id => id !== r.params.id).map(id => this.enrich(this.byId(id), 0)), hasRecent: s.recent.filter(id => id !== r.params.id).length > 0,
+      pdp, co, cartLines, savedLines, hasSaved: s.saved.length > 0, hasCart: s.cart.length > 0, noCart: s.cart.length === 0, cartCount, subtotalFmt: this.fmt(subtotal), deliveryHint: subtotal >= 1000000 ? 'Complimentary' : 'From ₦5,000 · calculated at checkout',
+      wishItems: s.wishlist.map(id => this.enrich(this.byId(id), 0)), wishCount: String(s.wishlist.length).padStart(2, '0'), hasWish: s.wishlist.length > 0, noWish: s.wishlist.length === 0, shareWish: () => this.toast('Wishlist link copied'),
+      acct, logout: () => { this.toast('Signed out'); this.nav('home'); }, saveProfile: () => this.toast('Profile saved'),
+      faq, aboutBlocks: [['01', 'Why we exist', 'Owning something exceptional in Nigeria used to mean flying somewhere else to find it, and hoping it was real. We built JewelryBox so it does not.'], ['02', 'What we select', 'Watches with movements worth servicing. Stones graded on the same scale as diamond. Metal that is what it says it is. If we would not keep it, we do not list it.'], ['03', 'How it arrives', 'Sealed, insured, signed for. In a case designed to sit on a dresser for twenty years, with a certificate that says exactly what is inside.'], ['04', 'Where we are going', 'A house Nigerians recognise abroad. Private viewings in Lagos this year; Abuja next.']].map(([n, title, body]) => ({ n, title, body })),
+      whatsapp: () => this.toast('Opens WhatsApp · +234 800 000 0000'), sendMessage: () => this.toast('Message sent. We reply within the hour.'),
+      camp, campaignLinks: Object.keys(camps).map(k => ({ label: camps[k].eyebrow, open: go('campaign', { key: k }) })),
+      query: s.query, setQuery: e => this.setState({ query: e.target.value }), hasQuery: q.length > 0, noQuery: q.length === 0, queryBar: q ? '100%' : '0%', searchResults, searchCount: String(searchResults.length).padStart(2, '0'), searchCats,
+      trending: ['gold', 'moissanite', 'automatic', 'studs', 'tennis bracelet'].map(label => ({ label, pick: pickQ(label) })), recentSearches: s.recentSearches.map(label => ({ label, pick: pickQ(label) })), hasRecentSearch: s.recentSearches.length > 0,
+      popularCats: [['watches', 'Watches', '24'], ['rings', 'Rings', '31'], ['necklaces', 'Necklaces', '22'], ['earrings', 'Earrings', '26'], ['gifts', 'Gifts', '40']].map(([k, label, count]) => ({ label, count, open: go('category', { cat: k }) })),
+      menuMain: [['category', { cat: 'watches' }, 'Watches', '24'], ['category', { cat: 'jewelry' }, 'Jewelry', '96'], ['category', { cat: 'moissanite' }, 'Moissanite', '33'], ['category', { cat: 'gifts' }, 'Gifts', '40'], ['category', { cat: 'new' }, 'New Arrivals', '12'], ['campaign', { key: 'wedding' }, 'The Wedding Edit', 'Edit']].map(([n, p, label, count], i) => ({ label, count, go: go(n, p), delay: `${i * 60}ms` })),
+      menuSecondary: [['about', 'About the house'], ['faq', 'FAQ'], ['contact', 'Contact'], ['account', 'Account'], ['wishlist', 'Wishlist'], ['campaign', 'Valentine\'s']].map(([n, label]) => ({ label, go: go(n, n === 'campaign' ? { key: 'valentine' } : {}) })),
+      qv: s.quick ? { ...this.enrich(this.byId(s.quick), 0), short: this.byId(s.quick).desc.split('.')[0] + '.' } : { img: '', brand: '', name: '', priceFmt: '', avail: '', availColor: '', short: '', add: () => {}, open: () => {} },
+      hasToast: !!s.toast, toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

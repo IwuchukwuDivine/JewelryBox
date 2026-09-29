@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-template",
+  "name": "jewelrybox",
   "type": "module",
   "private": true,
   "scripts": {
@@ -7,29 +7,60 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "fonts:woff2": "node scripts/fonts-to-woff2.mjs",
+    "fonts:metrics": "node scripts/font-fallback-metrics.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "lint": "eslint .",
+    "typecheck": "nuxi typecheck",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --local > supabase/database.types.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db": "vitest run tests/db",
+    "db:seed:generate": "node scripts/generate-seed.mjs"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/image": "^2.0.0",
+    "@nuxtjs/sitemap": "^7.6.0",
     "@pinia/nuxt": "^0.11.2",
+    "@resvg/resvg-js": "^2.6.2",
+    "@supabase/supabase-js": "^2.117.2",
     "@tailwindcss/vite": "^4.3.2",
+    "@takumi-rs/core": "^1.8.7",
     "@tanstack/vue-query": "^5.101.2",
     "@unhead/vue": "^3.1.7",
     "@vueuse/core": "^14.0.0",
     "eslint": "^10.6.0",
     "lucide-vue-next": "^1.0.0",
     "nuxt": "^4.4.8",
+    "nuxt-gtag": "^4.1.0",
     "nuxt-lucide-icons": "^2.0.0",
     "pinia-plugin-persistedstate": "^4.5.0",
+    "satori": "^0.33.5",
+    "sharp": "^0.34.3",
     "tailwindcss": "^4.3.2",
     "vue": "^3.5.38",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^4.3.2",
     "@types/node": "^24.9.2",
+    "@vitest/coverage-v8": "^5.0.2",
+    "happy-dom": "^20.14.5",
+    "nuxt-og-image": "^6.9.1",
+    "png-to-ico": "^3.0.2",
+    "supabase": "^2.118.0",
     "typescript": "^5.9.3",
-    "vue-tsc": "^3.1.1"
+    "vitest": "^5.0.2",
+    "vue-tsc": "^3.1.1",
+    "wawoff2": "^2.0.1"
+  },
+  "overrides": {
+    "sharp": "^0.34.3"
   }
 }

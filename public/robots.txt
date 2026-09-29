@@ -1,2 +1,16 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Allow: /
+
+# Private surfaces — also excluded from the sitemap and never prerendered.
+Disallow: /account
+Disallow: /admin
+Disallow: /checkout
+Disallow: /wishlist
+Disallow: /api/
+
+# Faceted listings: crawl the pieces, not every filter permutation.
+Disallow: /*?filter=
+Disallow: /*?sort=
+Disallow: /search
+
+Sitemap: https://jewelrybox.ng/sitemap.xml

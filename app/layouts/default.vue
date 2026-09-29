@@ -1,11 +1,30 @@
 <template>
-  <div>
-    <!-- <AppHeader /> -->
+  <div class="shell">
+    <LayoutAnnouncementBar />
+    <LayoutHeader />
+
     <slot />
-    <!-- <AppFooter /> -->
+
+    <LayoutFooter />
+
+    <ClientOnly>
+      <LayoutMobileNav />
+      <LayoutCartDrawer />
+      <ShopSearchOverlay />
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts"></script>
 
-<style scoped></style>
+<style scoped>
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.shell > :slotted(*) {
+  flex: 1;
+}
+</style>

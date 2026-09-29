@@ -2,89 +2,375 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════
-   BRAND THEME — fill in your palette per project.
-   The @theme block generates Tailwind utilities (bg-primary-500, etc.).
-   Semantic tokens (:root / .dark) are used in components via var(--x).
+   JEWELRYBOX — brand theme.
+
+   Values come from the approved design system (Claude Design project
+   "JewelryBox", file `Brand Identity.dc.html`, warm palette). Do not
+   invent colours here; the cool and neutral palettes were explored and
+   rejected.
+
+   Two layers:
+     @theme        immutable brand constants → Tailwind utilities
+     :root / .dark semantic tokens → what components actually reference
+
+   Fonts (Marcellus + Instrument Sans + IBM Plex Mono) are registered via
+   `fonts.families` in nuxt.config.ts. @nuxt/fonts emits the @font-face
+   rules and the preloads — never hand-write either here.
    ═══════════════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── Primary · your brand color (fill in the full 50–950 scale) ── */
-  --color-primary-50: #f5f5f5;
-  --color-primary-100: #e8e8e8;
-  --color-primary-200: #d1d1d1;
-  --color-primary-300: #a8a8a8;
-  --color-primary-400: #7a7a7a;
-  --color-primary-500: #525252;
-  --color-primary-600: #444444;
-  --color-primary-700: #363636;
-  --color-primary-800: #282828;
-  --color-primary-900: #1c1c1c;
-  --color-primary-950: #111111;
-  --color-primary: #525252;
+  /* ── Type ──────────────────────────────────────────────────────────
+     Marcellus for display, Instrument Sans for UI, IBM Plex Mono for
+     specs, prices and captions. No italics: the brand uses none. */
+  --font-display: "Marcellus", "Marcellus Fallback: Georgia",
+    "Marcellus Fallback: Times New Roman", Georgia, serif;
+  --font-body: "Instrument Sans", "Instrument Sans Fallback: Arial",
+    "Instrument Sans Fallback: Helvetica", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback: Courier New",
+    ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ── Secondary · your accent color ── */
-  --color-secondary-500: #737373;
-  --color-secondary: #737373;
+  /* ── Obsidian · the warm black the dark theme is built from ──────── */
+  --color-obsidian: #121010;
+  --color-obsidian-raised: #1a1715;
+  --color-obsidian-elevated: #221e1b;
+  --color-obsidian-line: #2c2724;
 
-  /* ── Status colors ── */
-  --color-success: #10b981;
-  --color-error: #e03e3e;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
+  /* ── Ivory · the warm paper the light theme is built from ────────── */
+  --color-ivory: #f6f1e8;
+  --color-ivory-raised: #fbf8f2;
+  --color-ivory-elevated: #ffffff;
+  --color-ivory-line: #e3dbcf;
+
+  /* ── Champagne · the only accent. Stones, hairlines, the metallic
+        wordmark. Never a background fill. ──────────────────────────── */
+  --color-champagne: #c8a97e;
+  --color-champagne-bright: #d9be97;
+  --color-champagne-deep: #9c7a4b;
+  --color-champagne-deeper: #86673d;
+  --color-champagne-deepest: #7a5d37;
+
+  /* ── Bone · type on obsidian ─────────────────────────────────────── */
+  --color-bone: #f3eee6;
+  --color-bone-soft: #c9c0b4;
+  --color-bone-muted: #8c8378;
+
+  /* ── Ink · type on ivory ─────────────────────────────────────────── */
+  --color-ink: #1c1714;
+  --color-ink-soft: #4a423c;
+  --color-ink-muted: #6e645a;
+
+  /* ── Geometry · one radius, everywhere. 50% is for avatars only. ─── */
+  --radius-brand: 2px;
+
+  /* ── Motion · slow, deliberate, expensive. Nothing bounces. ──────── */
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ─── Light Mode · Semantic Tokens ─── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FALLBACK METRICS — generated, do not hand-edit.
+
+   Each face below makes a system font occupy exactly the space the real
+   face will, so nothing reflows when the web font swaps in. @nuxt/fonts
+   only emits these for its remote providers; ours are local, so they are
+   produced here instead:
+
+       node scripts/font-fallback-metrics.mjs
+
+   Re-run and paste whenever a face in public/fonts/og/ changes.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@font-face {
+  font-family: "Marcellus Fallback: Georgia";
+  src: local("Georgia");
+  size-adjust: 102.5192%;
+  ascent-override: 95.0184%;
+  descent-override: 27.291%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Marcellus Fallback: Times New Roman";
+  src: local("Times New Roman");
+  size-adjust: 112.5%;
+  ascent-override: 86.5885%;
+  descent-override: 24.8698%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Instrument Sans Fallback: Arial";
+  src: local("Arial");
+  size-adjust: 102.7365%;
+  ascent-override: 94.4163%;
+  descent-override: 24.3341%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Instrument Sans Fallback: Helvetica";
+  src: local("Helvetica");
+  size-adjust: 102.7365%;
+  ascent-override: 94.4163%;
+  descent-override: 24.3341%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono Fallback: Courier New";
+  src: local("Courier New");
+  size-adjust: 99.9837%;
+  ascent-override: 102.5167%;
+  descent-override: 27.5045%;
+  line-gap-override: 0%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Light · Ivory
+   ───────────────────────────────────────────────────────────────────── */
 :root {
-  --font-family: sans-serif; /* swap for your custom font */
-  --right: env(safe-area-inset-right, 0px);
+  color-scheme: light;
+  --color-scheme: light;
+
+  --font-family: var(--font-body);
+
+  /* Motion durations: hover · reveal · hero */
+  --dur-hover: 240ms;
+  --dur-reveal: 600ms;
+  --dur-hero: 1200ms;
+
+  /* Safe areas */
   --top: env(safe-area-inset-top, 0px);
-  --left: env(safe-area-inset-left, 0px);
+  --right: env(safe-area-inset-right, 0px);
   --bottom: env(safe-area-inset-bottom, 0px);
+  --left: env(safe-area-inset-left, 0px);
 
   /* Surfaces */
-  --surface: #ffffff;
-  --surface-elevated: #ffffff;
-  --surface-muted: #f8f8f8;
-  --surface-subtle: #f0f0f0;
+  --surface: var(--color-ivory);
+  --surface-muted: var(--color-ivory-raised);
+  --surface-subtle: var(--color-ivory-raised);
+  --surface-elevated: var(--color-ivory-elevated);
+  --glass: rgba(246, 241, 232, 0.78);
 
   /* Text */
-  --text-primary: #171717;
-  --text-secondary: #444444;
-  --text-muted: #8a8a8a;
-  --text-on-primary: #ffffff;
-  --text-on-secondary: #ffffff;
+  --text-primary: var(--color-ink);
+  --text-secondary: var(--color-ink-soft);
+  --text-muted: var(--color-ink-muted);
+  --text-on-primary: var(--color-ivory-raised);
+  --text-on-secondary: var(--color-ivory-raised);
 
-  /* Borders & Rings */
-  --border-default: #e4e4e4;
-  --border-light: #efefef;
-  --ring-default: var(--color-primary);
+  /*
+   * Accent. `--color-primary` is the template-wide name for it.
+   *
+   * On ivory the accent has to carry body text, so it is the DEEPER champagne:
+   * #86673d gives 4.64:1 as text and 4.93:1 as a fill, both clearing AA.
+   * The lighter #9c7a4b sits at 3.52:1 as text and 3.74:1 as a fill — fine for
+   * large display figures and hairlines, not for anything at body size — so it
+   * stays available as `--accent-soft` rather than being the default.
+   *
+   * Dark needs none of this: champagne on obsidian is 8.5:1.
+   */
+  --color-primary: var(--color-champagne-deeper);
+  --accent: var(--color-champagne-deeper);
+  --accent-hover: var(--color-champagne-deepest);
+  --accent-soft: var(--color-champagne-deep);
+  --on-accent: var(--color-ivory-raised);
 
-  /* Overlay */
-  --overlay-default: rgba(0, 0, 0, 0.5);
+  /* Lines & rings */
+  --border-default: var(--color-ivory-line);
+  --border-light: var(--color-ivory-raised);
+  --border-strong: rgba(28, 23, 20, 0.22);
+  --ring-default: var(--accent);
+
+  /* Status */
+  --color-success: #3f7a4c;
+  --color-error: #b04543;
+  --color-warning: #a67a2e;
+  --color-info: #4a5f7a;
+
+  --overlay-default: rgba(28, 23, 20, 0.45);
+
+  /* Scrim behind drawers and modals. 40%, per Brand Identity §07. */
+  --overlay-scrim: rgba(0, 0, 0, 0.4);
+
+  /* Z-index ladder, taken from the prototype. Nothing invents its own. */
+  --z-sticky: 5;
+  --z-buybar: 15;
+  --z-header: 20;
+  --z-overlay: 40;
+  --z-toast: 60;
+  --z-boot: 100;
 }
 
-/* ─── Dark Mode · Semantic Tokens ─── */
+/* ─────────────────────────────────────────────────────────────────────
+   Dark · Obsidian — the launch default
+   ───────────────────────────────────────────────────────────────────── */
 .dark {
-  --surface: #111111;
-  --surface-elevated: #1a1a1a;
-  --surface-muted: #222222;
-  --surface-subtle: #2c2c2c;
+  color-scheme: dark;
+  --color-scheme: dark;
 
-  --text-primary: #f5f5f5;
-  --text-secondary: #cccccc;
-  --text-muted: #8a8a8a;
-  --text-on-primary: #ffffff;
-  --text-on-secondary: #ffffff;
+  --surface: var(--color-obsidian);
+  --surface-muted: var(--color-obsidian-raised);
+  --surface-subtle: var(--color-obsidian-raised);
+  --surface-elevated: var(--color-obsidian-elevated);
+  --glass: rgba(18, 16, 16, 0.72);
 
-  --border-default: #2c2c2c;
-  --border-light: #222222;
+  --text-primary: var(--color-bone);
+  --text-secondary: var(--color-bone-soft);
+  --text-muted: var(--color-bone-muted);
+  --text-on-primary: #171310;
+  --text-on-secondary: #171310;
 
-  --overlay-default: rgba(0, 0, 0, 0.75);
+  --color-primary: var(--color-champagne);
+  --accent: var(--color-champagne);
+  --accent-hover: var(--color-champagne-bright);
+  /* Already 8.5:1 on obsidian — no softer step is needed or wanted here. */
+  --accent-soft: var(--color-champagne);
+  --on-accent: #171310;
+
+  --border-default: var(--color-obsidian-line);
+  --border-light: var(--color-obsidian-raised);
+  --border-strong: rgba(200, 169, 126, 0.26);
+  --ring-default: var(--accent);
+
+  --color-success: #6fa07a;
+  --color-error: #d26a67;
+  --color-warning: #d2a15a;
+  --color-info: #8fa3bd;
+
+  --overlay-default: rgba(10, 9, 8, 0.72);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html {
+  color-scheme: var(--color-scheme);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  overflow-x: clip;
+  font-family: var(--font-body);
+  font-weight: 400;
+  background: var(--surface);
+  color: var(--text-primary);
+  transition:
+    background-color var(--dur-hover) var(--ease-brand),
+    color var(--dur-hover) var(--ease-brand);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Hidden scrollbars — the design keeps chrome out of the frame. */
+body::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none !important;
+}
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REUSABLE CLASSES — never repeat these styles in a component.
+   Specs are verbatim from the design system's type scale.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Marcellus display type. Size is set by the caller. */
+.display-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+/* Caption · Instrument Sans 11/1.4 · +0.14em · caps */
+.caption {
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Navigation · Instrument Sans 500 · 13 · +0.08em · caps */
+.nav-link {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: opacity var(--dur-hover) var(--ease-brand);
+}
+.nav-link:hover {
+  opacity: 0.65;
+}
+
+/* Button · Instrument Sans 500 · 12 · +0.14em · caps */
+.btn-solid,
+.btn-outline {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: var(--radius-brand);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-hover) var(--ease-brand),
+    color var(--dur-hover) var(--ease-brand),
+    opacity var(--dur-hover) var(--ease-brand);
+}
+.btn-solid {
+  padding: 16px 24px;
+  border: none;
+  background: var(--text-primary);
+  color: var(--surface);
+}
+.btn-outline {
+  padding: 15px 24px;
+  border: 1px solid var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
+}
+.btn-solid:hover,
+.btn-outline:hover {
+  opacity: 0.82;
+}
+.btn-solid:disabled,
+.btn-outline:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Price · tabular figures so columns of naira align. */
+.price {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The 1px rule that separates almost everything in this design. */
+.hairline {
+  border: 0;
+  height: 1px;
+  background: var(--border-default);
 }
 
 /* Accessibility: hidden link that appears on keyboard focus */
@@ -97,11 +383,14 @@
   overflow: hidden;
   z-index: 9999;
   padding: 0.75rem 1.5rem;
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-  font-weight: 600;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-body);
+  font-weight: 500;
   font-size: 0.875rem;
-  border-radius: 0 0 0.5rem 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0 0 var(--radius-brand) 0;
   text-decoration: none;
 }
 
@@ -113,22 +402,488 @@
   height: auto;
 }
 
-body::-webkit-scrollbar {
-    display: none !important;
-  }
-  ::-webkit-scrollbar {
-    width: 0px !important;
-    height: 0px;
-    display: none;
-  }
+/* The motion spec is deliberately slow; honour the OS opt-out. */
 
-body {
-  font-family: var(--font-family);
-  background: var(--surface);
+/* Mono metadata · IBM Plex Mono 10/1 · +0.12em · caps.
+   Eyebrows, section numbers, spec labels, refs, order IDs, gallery position. */
+.mono-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Accent eyebrow — the mono line that opens a hero or section. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Text button · 12/.1em caps, accent underline held 6px off the baseline. */
+.text-link {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--text-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--accent);
+  transition: opacity var(--dur-hover) var(--ease-brand);
+}
+.text-link:hover {
+  opacity: 0.7;
+}
+
+/* ───────────────────────────── Surfaces ───────────────────────────── */
+
+.luxe-card {
+  background: var(--surface-muted);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-brand);
+}
+
+/* Glass chrome — header, sticky filter bar, sticky buy bar. */
+.glass-bar {
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* The 1px gap IS the rule. Used by the PDP specs table, the moissanite
+   stat strip and the account stat tiles. Cells need .hairline-table__cell. */
+.hairline-table {
+  display: grid;
+  gap: 1px;
+  background: var(--border-default);
+  border: 1px solid var(--border-default);
+}
+.hairline-table__cell {
+  background: var(--surface);
+  padding: 14px;
+}
+
+/* Hairline frame floated inside a hero or gallery image. */
+.inset-frame {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(243, 238, 230, 0.16);
+  pointer-events: none;
+}
+
+/* Two 10px accent brackets, opposite corners. Parent needs position. */
+.corner-brackets::before,
+.corner-brackets::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.corner-brackets::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--accent);
+  border-left: 1px solid var(--accent);
+}
+.corner-brackets::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
+}
+
+/* ───────────────────────── Structure & rhythm ───────────────────────── */
+
+/* Page gutter. 20px is the prototype; the rest is the desktop extrapolation. */
+.section-shell {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (min-width: 768px) {
+  .section-shell {
+    padding-inline: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .section-shell {
+    padding-inline: 48px;
+  }
+}
+
+/* Horizontal snap rail — featured pieces, related, recently viewed. */
+.rail {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 20px;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
+.rail > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+/* Tappable list row — curated edits, FAQ, account, search results. */
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 56px;
+  padding: 14px 0;
+  border: none;
+  border-bottom: 1px solid var(--border-default);
+  background: none;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--dur-hover) var(--ease-brand);
+}
+.list-row:hover {
+  opacity: 0.7;
+}
+
+/* Filter / variant / category chip. 2px radius, selected inverts. */
+.chip {
+  flex: 0 0 auto;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px 12px;
+  border-radius: var(--radius-brand);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-hover) var(--ease-brand),
+    border-color var(--dur-hover) var(--ease-brand),
+    color var(--dur-hover) var(--ease-brand);
+}
+.chip:hover:not(.chip--active) {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.chip--active {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--surface);
+}
+.chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.chip:focus-visible {
+  outline: 2px solid var(--ring-default);
+  outline-offset: 2px;
+}
+
+/* Every icon button in the design is a 44px touch target. */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-brand);
+  transition: opacity var(--dur-hover) var(--ease-brand);
+}
+.icon-btn:hover {
+  opacity: 0.65;
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--ring-default);
+  outline-offset: 2px;
+}
+
+/* Readable by assistive tech, invisible on screen. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The house's saved-piece marker and empty-state mark. */
+.diamond {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 1px solid currentColor;
+  transform: rotate(45deg);
+  transition:
+    background-color var(--dur-hover) var(--ease-brand),
+    opacity var(--dur-hover) var(--ease-brand);
+}
+.diamond--filled {
+  background: currentColor;
+}
+
+/* ─────────────────────────────── Forms ───────────────────────────────
+   Underline only. No box, no radius — verbatim from the component strip. */
+
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.app-field__label {
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--dur-hover) var(--ease-brand);
+}
+.app-field__required {
+  color: var(--accent);
+  margin-left: 2px;
+}
+.app-field__control {
+  width: 100%;
+  font-family: var(--font-body);
+  /* 16px, not the prototype's 15px, and not negotiable: iOS Safari zooms the
+     viewport on focus for any text control under 16px and never zooms back
+     out. A 1px divergence from the design source is the cheaper mistake. Any
+     new text input must clear this bar too — see `.filter-bar__select` for the
+     pattern when a control has to *look* smaller than 16px. */
+  font-size: 16px;
+  line-height: 1.4;
+  padding: 10px 0;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--text-secondary);
+  border-radius: 0;
+  outline: none;
+  transition: border-color var(--dur-hover) var(--ease-brand);
+}
+.app-field__control::placeholder {
+  color: var(--text-muted);
+}
+.app-field__control:focus {
+  border-bottom-color: var(--accent);
+}
+.app-field__error,
+.app-field__hint {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.app-field__hint {
+  color: var(--text-muted);
+}
+.app-field__error {
+  color: var(--color-error);
+}
+/* Error turns the label AND the line, per the component strip. */
+.app-field--error .app-field__label {
+  color: var(--color-error);
+}
+.app-field--error .app-field__control {
+  border-bottom-color: var(--color-error);
+}
+.app-field--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ─────────────────────────── Loading state ─────────────────────────── */
+
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-muted);
+  border-radius: var(--radius-brand);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-default),
+    transparent
+  );
+  animation: skeleton-shimmer 1.6s var(--ease-brand) infinite;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   REUSABLE CLASSES — never repeat the same styles across components.
-   Extract shared styles here instead.
+   MOTION — "Slow, deliberate, expensive."
+   ease: var(--ease-brand), nothing bounces.
+   240 / 600 / 1200ms = hover · reveal · hero.
    ═══════════════════════════════════════════════════════════════════════ */
+
+@keyframes jbRise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes jbFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* Images settle 1.04 → 1 over --dur-hero. */
+@keyframes jbScale {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes jbSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+/* Mirror of jbSlideIn, for a panel entering from the left edge. */
+@keyframes jbSlideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes jbSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+/* The loading hairline, drawn around the monogram once every 2s. */
+@keyframes jbLine {
+  0% {
+    width: 0;
+    left: 0;
+  }
+  50% {
+    width: 100%;
+    left: 0;
+  }
+  100% {
+    width: 0;
+    left: 100%;
+  }
+}
+@keyframes jbPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes skeleton-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Reveal · 24px rise + fade, staggered 80ms per line.
+   The v-reveal directive adds .jb-reveal on mount (so server-rendered
+   markup is visible without JS) then .jb-reveal--in on intersection. */
+.jb-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-brand),
+    transform var(--dur-reveal) var(--ease-brand);
+}
+.jb-reveal--in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Page change · 400ms fade, content enters from 16px below. */
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity 400ms var(--ease-brand),
+    transform 400ms var(--ease-brand);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.page-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  /* Reveals hold a static transform, so zeroing durations is not enough —
+     land them outright rather than leaving content stranded off-screen. */
+  .jb-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

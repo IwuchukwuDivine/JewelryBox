@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { OBSIDIAN, BONE, BONE_SOFT, BONE_MUTED, CHAMPAGNE } from "~/utils/constants/brand";
 /**
  * Campaign / editorial card — /campaign/[slug].
  *
@@ -46,11 +47,6 @@ const props = withDefaults(
   { title: "", pill: "", description: "", image: "", weight: 400 },
 );
 
-const OBSIDIAN = "#121010";
-const BONE = "#F3EEE6";
-const BONE_SOFT = "#C9C0B4";
-const BONE_MUTED = "#8C8378";
-const CHAMPAGNE = "#C8A97E";
 
 const DISPLAY = "Marcellus OG";
 const BODY = "Instrument Sans OG";

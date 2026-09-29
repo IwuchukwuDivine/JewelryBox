@@ -59,6 +59,20 @@
   width: 100%;
 }
 
+/*
+ * app.vue wraps <NuxtPage> in <main id="main-content">, so the slot's child is
+ * that wrapper rather than the card. As a flex item it is shrink-to-fit, which
+ * centres only while the page's content happens to be narrow — one wide
+ * descendant and it stretches, leaving the card hard against the left edge.
+ * Making the wrapper itself a full-width centring container removes the
+ * dependency on what the page contains.
+ */
+.auth-shell__main > :deep(*) {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   .auth-shell {
     gap: 40px;

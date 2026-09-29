@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { OBSIDIAN, HAIRLINE_DARK as HAIRLINE, BONE, BONE_SOFT, BONE_MUTED, CHAMPAGNE } from "~/utils/constants/brand";
 /**
  * Collection / category card — /watches, /rings, /moissanite …
  *
@@ -50,12 +51,6 @@ const props = withDefaults(
   { title: "Collection", pill: "", description: "", count: 0, weight: 400 },
 );
 
-const OBSIDIAN = "#121010";
-const HAIRLINE = "#2C2724";
-const BONE = "#F3EEE6";
-const BONE_SOFT = "#C9C0B4";
-const BONE_MUTED = "#8C8378";
-const CHAMPAGNE = "#C8A97E";
 
 const DISPLAY = "Marcellus OG";
 const BODY = "Instrument Sans OG";

@@ -247,84 +247,85 @@ for figures and IDs.
 
 ## Phase A · Schema
 
-- [ ] `supabase/migrations/<ts>_init_shop.sql`, modelled on BGI's init:
-  - [ ] `profiles` — id, full_name, phone, role, created_at. + `is_admin()`,
+- [x] `supabase/migrations/<ts>_init_shop.sql`, modelled on BGI's init:
+  - [x] `profiles` — id, full_name, phone, role, created_at. + `is_admin()`,
         `handle_new_user()` trigger, `protect_profile_role()` trigger.
-  - [ ] `products` — slug, name, description, category, brand, price_ngn,
+  - [x] `products` — slug, name, description, category, brand, price_ngn,
         images[], in_stock, made_to_order, featured, is_moissanite, specs jsonb
         (movement, case size, material, water resistance, stone, cut, clarity),
         created_at. **No grams, no karat.**
-  - [ ] `product_variants` — label, options jsonb, price_ngn, in_stock, position.
-  - [ ] `delivery_rates` — mode `('dispatch','flight')`, name, state, fee_ngn,
+  - [x] `product_variants` — label, options jsonb, price_ngn, in_stock, position.
+  - [x] `delivery_rates` — mode `('dispatch','flight')`, name, state, fee_ngn,
         active, position. A `dispatch` row is a Lagos area and must carry
         `state = 'Lagos'`; a `flight` row is a state and must not. Enforce
         both with a check constraint, and `unique (mode, name)`.
-  - [ ] `site_settings` — key/value jsonb (bank account details, contact
+  - [x] `site_settings` — key/value jsonb (bank account details, contact
         details, WhatsApp number).
-  - [ ] `orders` — order_number, user_id, **status** check
+  - [x] `orders` — order_number, user_id, **status** check
         `('received','confirmed','shipped','delivered','cancelled')`,
         **payment_method** check `('bank_transfer','pay_on_delivery')`,
         items jsonb, delivery_method `('dispatch','flight')`,
         delivery_destination (area or state name), delivery_fee_ngn **nullable**,
         subtotal_ngn, total_ngn, shipping_address jsonb, status_history jsonb,
         paid_at, created_at.
-  - [ ] `wishlists`, `announcements` (+ single-active trigger).
-- [ ] Constraint: `status = 'confirmed'` requires
+  - [x] `wishlists`, `announcements` (+ single-active trigger).
+- [x] Constraint: `status = 'confirmed'` requires
       `payment_method = 'bank_transfer'`.
-- [ ] `append_order_status_history()` trigger — port from BGI.
-- [ ] `advance_order_status()` — validates the transition against the order's
+- [x] `append_order_status_history()` trigger — port from BGI.
+- [x] `advance_order_status()` — validates the transition against the order's
       payment method, sets `paid_at`, rejects illegal jumps. Admin only.
-- [ ] `place_order(p_items, p_address, p_delivery, p_payment)` — reprices every
+- [x] `place_order(p_items, p_address, p_delivery, p_payment)` — reprices every
       line server-side from `products`/`product_variants`, resolves the delivery
       fee from `delivery_rates`, generates `JB-XXXXXX`, inserts at `received`.
       Never trusts a client price.
-  - [ ] Derives `delivery_method` from the address state server-side — Lagos →
+  - [x] Derives `delivery_method` from the address state server-side — Lagos →
         dispatch, anything else → flight — rather than trusting the client, and
         rejects a `rate_id` whose state does not match the address.
-  - [ ] Accepts an order to an unpriced destination with a null fee.
-- [ ] `lookup_order(p_order_ref, p_email)` — guest tracking, `security definer`.
-- [ ] Full RLS: public read on products/variants/rates/settings/announcements;
+  - [x] Accepts an order to an unpriced destination with a null fee.
+- [x] `lookup_order(p_order_ref, p_email)` — guest tracking, `security definer`.
+- [x] Full RLS: public read on products/variants/rates/settings/announcements;
       own-row on profiles/orders/wishlists; admin write everywhere.
-- [ ] Storage bucket `product-images` + the 4 storage policies.
-- [ ] `supabase/seed.sql` — mirror `app/utils/mock/products.ts` exactly so the
+- [x] Storage bucket `product-images` + the 4 storage policies.
+- [x] `supabase/seed.sql` — mirror `app/utils/mock/products.ts` exactly so the
       Phase F swap is invisible.
 
 ## Phase B · Server routes + email
 
-- [ ] `server/utils/supabase.ts`, `supabaseService.ts` — port from BGI.
-- [ ] `server/api/orders/notify.post.ts` — order placed → customer + vendor email.
-- [ ] `server/utils/orderEmails.ts` — port BGI's structure: brand tokens as
+- [x] `server/utils/supabase.ts`, `supabaseService.ts` — port from BGI.
+- [x] `server/api/orders/notify.post.ts` — order placed → customer + vendor email.
+- [x] `server/utils/orderEmails.ts` — port BGI's structure: brand tokens as
       consts, an `esc()` helper, partials (`itemRows`, `totalsRows`,
       `addressBlock`, `button`), a `shell()` document wrapper, a
       `STATUS_COPY: Record<OrderStatus, {subject, heading, body}>` map, and
       four payload builders (customer/vendor × placed/status).
       **Emails live in the repo as HTML, not as Resend-hosted templates** —
       they interpolate order data and must be version-controlled with the code.
-  - [ ] Copy rewritten for the two lanes: a bank-transfer "received" email
+  - [x] Copy rewritten for the two lanes: a bank-transfer "received" email
         carries the account details and the order number as reference; a
         pay-on-delivery "received" email states the amount due at the door.
-  - [ ] `STATUS_COPY` keyed to the new statuses — `received`, `confirmed`,
+  - [x] `STATUS_COPY` keyed to the new statuses — `received`, `confirmed`,
         `shipped`, `delivered`, `cancelled`. BGI's `pending`/`paid`/`processing`
         keys do not exist here.
-- [ ] `server/utils/sendOrderEmails.ts` — BGI hits `https://api.resend.com/emails`
+- [x] `server/utils/sendOrderEmails.ts` — BGI hits `https://api.resend.com/emails`
       with a raw `fetch` and no SDK. **Decide first:** keep that, or use the
       `resend` SDK for idempotency keys and typed errors. The `resend:*` skills
       in this repo cover the trade-off, deliverability and SPF/DKIM.
-- [ ] `supabase/templates/{confirmation,recovery,invite,email_change,password_changed_notification}.html`
+- [x] `supabase/templates/{confirmation,recovery,invite,email_change,magic_link,password_changed_notification}.html`
       — branded auth emails sent by Supabase, not Resend. Wire via
       `[auth.email.template.*]` in `config.toml`.
       **Gotcha from BGI:** `[auth.email.template.*]` paths resolve from the
       project root (`./supabase/templates/…`) while
       `[auth.email.notification.*]` resolve from `./supabase/` (`./templates/…`).
       That inconsistency is real — do not "fix" it.
-- [ ] Extend `server/api/__sitemap__/urls.ts` with published products and
+- [x] Extend `server/api/__sitemap__/urls.ts` with published products and
       categories, `lastmod` from `updated_at`. The TODO is already in the file.
-- [ ] `server/api/contact.post.ts` — contact form → vendor email, rate limited.
+- [x] `server/api/contact.post.ts` — contact form → vendor email, rate limited.
 
 ## Phase C · Client data layer
 
-- [ ] `app/composables/useSupabaseClient.ts`, `app/utils/supabase.ts`.
-- [ ] `app/utils/api/{shop,orders,admin,wishlist,announcements,delivery}.ts` —
+- [ ] `app/utils/supabase.ts` is done (backend). The composable half went to the
+      frontend lane as `useAuth` — see the lane split note below.
+- [x] `app/utils/api/{shop,orders,admin,wishlist,announcements,delivery}.ts` —
       port BGI's structure, implementing the interfaces in `types/api.ts`.
 - [ ] Stores: `cart` (persisted), `wishlist`, `address`, `orders`, `app`.
       Port from BGI; drop `currency` and `rates`.
@@ -332,6 +333,16 @@ for figures and IDs.
 - [ ] `useAuth` + `middleware/{auth,admin,guest,checkout}.ts`.
 
 ---
+
+> **Lane split, as built.** The backend lane owned `supabase/`, `server/`,
+> `app/utils/api/`, `app/utils/supabase.ts` and `tests/`. The remaining Phase C
+> items — stores, composables, `useAuth` and the four middleware — were built by
+> the frontend lane instead, because both lanes ran concurrently in one working
+> tree and those paths were already theirs. They are done; the boxes above are
+> left unticked because they are not the backend lane's to claim.
+>
+> Backend surfaces all built. Phase G's component and E2E tests, and the `seoText` / `rules` unit
+> tests, remain with the frontend lane.
 
 # Phase F · Integration
 
@@ -347,13 +358,13 @@ for figures and IDs.
 
 BGI has none. Do not repeat that.
 
-- [ ] Vitest + `@nuxt/test-utils`.
+- [x] Vitest + `@nuxt/test-utils`.
 - [ ] Unit: `formatPrice`, `seoText` (60/155 caps), `cartLineKey`, `rules`,
       **order status transition validity for both lanes**, and
       `deliveryMethodForState` (Lagos in any casing → dispatch).
 - [ ] Component: `Order/Timeline` for both lanes, `PaymentMethodPicker`,
       `QuantityStepper`, `ProductForm` validation.
-- [ ] DB: `place_order` picks the Lagos area fee for a Lagos address and the
+- [x] DB: `place_order` picks the Lagos area fee for a Lagos address and the
       state fee otherwise; rejects a `rate_id` from the wrong state; accepts an
       unpriced destination with a null fee. `place_order` reprices when a
       client sends a tampered price;

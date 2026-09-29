@@ -247,7 +247,38 @@ export const mockDeliveryRepo: DeliveryRepository = {
 
 /* ── Orders ───────────────────────────────────────────────────────────── */
 
-const orders: Order[] = clone(MOCK_ORDERS);
+const PLACED_ORDERS_KEY = "jb-mock-orders";
+
+/**
+ * Orders placed during this session, persisted alongside the fixtures.
+ *
+ * Module state alone is lost on a full page load, which made the most
+ * ordinary review path — place an order, then open or refresh its page —
+ * report "we could not find that order". The real table obviously persists;
+ * the mock has to as well or the guest-lookup flow cannot be exercised.
+ */
+const readPlaced = (): Order[] => {
+  if (!import.meta.client) return [];
+  try {
+    const raw = localStorage.getItem(PLACED_ORDERS_KEY);
+    return raw ? (JSON.parse(raw) as Order[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const orders: Order[] = [...readPlaced(), ...clone(MOCK_ORDERS)];
+
+const persistPlaced = () => {
+  if (!import.meta.client) return;
+  try {
+    const fixtureIds = new Set(MOCK_ORDERS.map((o) => o.id));
+    const placed = orders.filter((o) => !fixtureIds.has(o.id));
+    localStorage.setItem(PLACED_ORDERS_KEY, JSON.stringify(placed));
+  } catch {
+    // Private browsing — the order simply does not survive the reload.
+  }
+};
 
 /*
  * Failed guest lookups, for the anon-callable throttle on `lookup_order`.
@@ -434,6 +465,7 @@ export const mockOrdersRepo: OrdersRepository = {
     };
 
     orders.unshift(order);
+    persistPlaced();
     return settle(clone(order));
   },
 

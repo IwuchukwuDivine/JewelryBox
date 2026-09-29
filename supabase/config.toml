@@ -244,16 +244,54 @@ otp_expiry = 900
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded auth mail. Templates live in `./supabase/templates/*.html` and share
+# the shell of `server/utils/orderEmails.ts` — ivory card, hairline rules, the
+# wordmark as ink type, the palette literals of `server/utils/emailPalette.ts`.
+# The confirmation mail is the first email a customer ever gets from the brand,
+# so it is not left as GoTrue's default.
+#
+# One `./supabase/…` prefix for all six, measured rather than copied. BGI's
+# config writes `./templates/…` under `[auth.email.notification.*]` and
+# `./supabase/templates/…` under `[auth.email.template.*]`, and calls the
+# inconsistency load-bearing. It is not, on this CLI: both forms were tried here
+# with a full `stop`/`start`, and in each case the file the CLI handed GoTrue
+# (served at `http://…kong…:8088/email/<name>.html`) was byte-for-byte this
+# directory's. So the notification block accepts either, and the consistent form
+# is the one worth keeping. Note the CLI does not check these paths at parse
+# time — `supabase status` stays silent on a bad one — so the only real check is
+# a restart plus a rendered mail, which is how every block below was verified.
+#
+# Every subject is also the mail's `<title>`. Templates read only variables
+# GoTrue supplies for their own kind: `.Token` and `.ConfirmationURL` in the
+# confirmation mail (the app's `/auth/otp-verification` asks for the code, so
+# both routes must work), `.ConfirmationURL` + `.Email` elsewhere, and
+# `.NewEmail` in the email-change mail, which `double_confirm_changes` sends to
+# both addresses.
+[auth.email.template.confirmation]
+subject = "Confirm your email · JewelryBox"
+content_path = "./supabase/templates/confirmation.html"
 
-# Uncomment to customize notification email template
-# [auth.email.notification.password_changed]
-# enabled = true
-# subject = "Your password has been changed"
-# content_path = "./templates/password_changed_notification.html"
+[auth.email.template.recovery]
+subject = "Reset your JewelryBox password"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Your JewelryBox sign-in link"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.invite]
+subject = "Your invitation to JewelryBox"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new email · JewelryBox"
+content_path = "./supabase/templates/email_change.html"
+
+# Not an action, a record: sent after a password actually changes.
+[auth.email.notification.password_changed]
+enabled = true
+subject = "Your JewelryBox password was changed"
+content_path = "./supabase/templates/password_changed_notification.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

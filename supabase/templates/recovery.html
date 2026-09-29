@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="color-scheme" content="light" />
+<meta name="supported-color-schemes" content="light" />
+<title>Reset your password &middot; JewelryBox</title>
+</head>
+<body style="margin:0;padding:0;width:100%;background-color:#F6F1E8;color:#1C1714;-webkit-text-size-adjust:100%;">
+<div lang="en" dir="ltr" style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#F6F1E8;mso-hide:all;">A link to choose a new password. It is good for fifteen minutes.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F6F1E8;">
+  <tr>
+    <td align="center" style="padding:32px 12px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;width:100%;background-color:#FFFFFF;border:1px solid #E3DBCF;border-radius:3px;">
+        <tr>
+          <td style="padding:22px 32px;border-bottom:1px solid #E3DBCF;">
+            <a href="{{ .SiteURL }}" style="font-family:Georgia,'Times New Roman',Times,serif;font-size:15px;font-weight:400;letter-spacing:0.26em;color:#1C1714;text-decoration:none;">JEWELRYBOX</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',Times,serif;font-size:26px;line-height:1.25;font-weight:400;letter-spacing:-0.01em;color:#1C1714;">Reset your password.</h1>
+            <p style="margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#4A423C;">We received a request to reset the password for <span style="color:#1C1714;font-weight:600;">{{ .Email }}</span>. Choose a new one below.</p>
+
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;border-collapse:separate;">
+              <tr>
+                <td align="center" bgcolor="#86673D" style="border-radius:2px;">
+                  <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 26px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#FBF8F2;text-decoration:none;">Choose a new password</a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12.5px;line-height:1.7;color:#6E645A;word-break:break-all;">
+              Or paste this into your browser:<br />
+              <a href="{{ .ConfirmationURL }}" style="color:#4A423C;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+            </p>
+            <p style="margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.65;color:#6E645A;">The link is good for fifteen minutes and can be used once.</p>
+            <p style="margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.65;color:#6E645A;">If you did not ask for this, ignore the email. Your password stays as it is.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 32px;border-top:1px solid #E3DBCF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11.5px;line-height:1.7;color:#6E645A;">
+            JewelryBox &middot; Luxury you can experience, not just purchase.<br />
+            Lagos, Nigeria &middot; <a href="{{ .SiteURL }}" style="color:#4A423C;text-decoration:underline;">{{ .SiteURL }}</a><br />
+            You are receiving this because a password reset was requested for this address at JewelryBox.
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

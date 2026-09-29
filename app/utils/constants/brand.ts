@@ -20,7 +20,19 @@ export const SITE_TAGLINE = "Luxury you can experience, not just purchase.";
 export const SOCIAL_X = "";
 export const SOCIAL_INSTAGRAM = "";
 
-/* ── Colour ──────────────────────────────────────────────────────────── */
+/* ── Colour ──────────────────────────────────────────────────────────────
+   Literals for the places CSS custom properties cannot reach. Today that is
+   the Satori share cards, which render to PNG and resolve no variables.
+
+   These are the DARK values on purpose: a share card is a fixed artifact on
+   someone else's feed, not a surface that follows the visitor's theme. The
+   site itself must never read these — it uses the semantic tokens in
+   `main.css`, which switch with the theme.
+
+   `scripts/generate-icons.mjs` still carries its own copies because it is a
+   plain node script and cannot import TypeScript. That one duplication is
+   knowingly left, and its comment says so.
+   ────────────────────────────────────────────────────────────────────────── */
 
 export const OBSIDIAN = "#121010";
 export const OBSIDIAN_RAISED = "#1A1715";
@@ -30,8 +42,10 @@ export const BONE = "#F3EEE6";
 export const BONE_SOFT = "#C9C0B4";
 export const BONE_MUTED = "#8C8378";
 export const CHAMPAGNE = "#C8A97E";
+/** Dark-theme success. The light value lives in `main.css` as `--color-success`. */
+export const SUCCESS_DARK = "#6FA07A";
 
-/** `theme-color` meta: obsidian, because dark is the launch default. */
+/** `theme-color` meta values. Light is the launch default; see `useTheme()`. */
 export const THEME_COLOR_DARK = OBSIDIAN;
 export const THEME_COLOR_LIGHT = IVORY;
 

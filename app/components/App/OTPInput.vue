@@ -141,7 +141,16 @@ const handleFocus = (index: number) => {
 }
 
 .app-otp__cell {
-  flex: 1;
+  /*
+   * An <input> carries a large intrinsic width (~20 characters), and `flex: 1`
+   * does not constrain it under intrinsic sizing. Six of them made this row's
+   * max-content width over 1000px, which stretched the shrink-to-fit wrapper
+   * in the auth layout and pushed the card off centre. An explicit basis caps
+   * it; flex still distributes the remaining space.
+   */
+  flex: 1 1 40px;
+  width: 40px;
+  max-width: 56px;
   min-width: 0;
   font-family: var(--font-mono);
   font-size: 20px;

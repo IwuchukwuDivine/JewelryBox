@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { OBSIDIAN, HAIRLINE_DARK as HAIRLINE, BONE, BONE_SOFT, BONE_MUTED, CHAMPAGNE, SUCCESS_DARK as SUCCESS } from "~/utils/constants/brand";
 /**
  * Product card — /product/[slug].
  *
@@ -69,13 +70,6 @@ const props = withDefaults(
   },
 );
 
-const OBSIDIAN = "#121010";
-const HAIRLINE = "#2C2724";
-const BONE = "#F3EEE6";
-const BONE_SOFT = "#C9C0B4";
-const BONE_MUTED = "#8C8378";
-const CHAMPAGNE = "#C8A97E";
-const SUCCESS = "#6FA07A";
 
 const DISPLAY = "Marcellus OG";
 const BODY = "Instrument Sans OG";

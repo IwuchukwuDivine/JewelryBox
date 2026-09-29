@@ -3,6 +3,7 @@ Allow: /
 
 # Private surfaces — also excluded from the sitemap and never prerendered.
 Disallow: /account
+Disallow: /admin
 Disallow: /checkout
 Disallow: /wishlist
 Disallow: /api/

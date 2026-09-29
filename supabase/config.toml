@@ -149,9 +149,21 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://localhost:3000"
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://localhost:3000", "http://localhost:3000/**", "http://127.0.0.1:3000", "http://127.0.0.1:3000/**"]
+#
+# env()-driven ON PURPOSE, and this one is a trap worth understanding.
+# `supabase config push` writes whatever this file declares into the LINKED
+# project — so a hardcoded localhost here would silently replace the production
+# site_url and break every confirmation and password-reset link. Keeping it in the
+# environment means `.env` supplies localhost locally, and the deploy environment
+# (or a `supabase config push` run with SUPABASE_AUTH_SITE_URL set) supplies the
+# real origin.
+#
+# Always run `supabase config diff` before a push and read the site_url line.
+site_url = "env(SUPABASE_AUTH_SITE_URL)"
+# A list of *exact* URLs that auth providers are permitted to redirect to post
+# authentication. Wildcards are needed because the auth flows land on nested
+# paths (/auth/confirm, /auth/reset-password, /auth/callback).
+additional_redirect_urls = ["env(SUPABASE_AUTH_SITE_URL)", "env(SUPABASE_AUTH_REDIRECT_GLOB)"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -235,14 +247,28 @@ otp_length = 6
 otp_expiry = 900
 
 # Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# Custom SMTP — REQUIRED IN PRODUCTION, not an optimisation.
+#
+# `enable_confirmations = true` below means a signup cannot complete until the
+# confirmation mail is delivered. Supabase's built-in sender is rate-limited to a
+# handful of messages per hour and is explicitly not for production use, so
+# without this real customers silently fail to register.
+#
+# Routed through Resend, which already sends the order mail and has jewelrybox.ng
+# verified. Confirm the host and port against Resend's own dashboard before a
+# push; the username is the literal string "resend" and the password is an API
+# key, so it must come from the environment and never be committed.
+#
+# Left disabled locally: `supabase start` runs Mailpit on :54324 and catching mail
+# there is what makes the auth flows testable offline.
+[auth.email.smtp]
+enabled = false
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "hello@jewelrybox.ng"
+sender_name = "JewelryBox"
 
 # Branded auth mail. Templates live in `./supabase/templates/*.html` and share
 # the shell of `server/utils/orderEmails.ts` — ivory card, hairline rules, the

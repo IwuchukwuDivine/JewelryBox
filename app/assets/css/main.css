@@ -678,7 +678,12 @@ body {
 .app-field__control {
   width: 100%;
   font-family: var(--font-body);
-  font-size: 15px;
+  /* 16px, not the prototype's 15px, and not negotiable: iOS Safari zooms the
+     viewport on focus for any text control under 16px and never zooms back
+     out. A 1px divergence from the design source is the cheaper mistake. Any
+     new text input must clear this bar too — see `.filter-bar__select` for the
+     pattern when a control has to *look* smaller than 16px. */
+  font-size: 16px;
   line-height: 1.4;
   padding: 10px 0;
   color: var(--text-primary);

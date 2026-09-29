@@ -201,6 +201,8 @@ export default defineNuxtConfig({
     exclude: [
       "/account",
       "/account/**",
+      "/admin",
+      "/admin/**",
       "/checkout",
       "/checkout/**",
       "/wishlist",
@@ -249,6 +251,7 @@ export default defineNuxtConfig({
     // Private surfaces: rendered per request, never prerendered, and
     // excluded from the sitemap above + disallowed in public/robots.txt.
     "/account/**": { prerender: false },
+    "/admin/**": { prerender: false },
     "/checkout/**": { prerender: false },
     "/wishlist": { prerender: false },
   },

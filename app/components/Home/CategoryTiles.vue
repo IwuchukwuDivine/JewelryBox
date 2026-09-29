@@ -71,9 +71,8 @@ const tiles = computed(() =>
       name: category.plural,
       to: `/${category.slug}`,
       count: items.length,
-      // The first piece in the line stands in for it. Real category
-      // photography (`category.heroImage`) lands at Phase F.
-      image: items[0]?.images[0] ?? "",
+      // The vendor's own photograph for the line.
+      image: category.heroImage,
       alt: `${category.plural} — ${category.headline}`,
     };
   }),

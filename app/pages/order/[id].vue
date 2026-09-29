@@ -241,18 +241,11 @@ const showBankCard = computed(() => {
   );
 });
 
-/*
- * TODO(launch): the concierge number is duplicated from `pages/contact.vue`.
- * Both should read `site_settings` once the admin surface lands, so a change
- * of number does not have to be found in two files.
- */
-const CONCIERGE_WHATSAPP = "2348000000000";
+const { whatsappUrl: buildWhatsappUrl } = useSiteSettings();
 
 const whatsappUrl = computed(() => {
   const ref = order.value?.order_number ?? reference.value;
-  return `https://wa.me/${CONCIERGE_WHATSAPP}?text=${encodeURIComponent(
-    `Hello JewelryBox, I have a question about order ${ref}.`,
-  )}`;
+  return buildWhatsappUrl(`Hello JewelryBox, I have a question about order ${ref}.`);
 });
 
 usePageSeo({

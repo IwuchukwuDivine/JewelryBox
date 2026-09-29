@@ -16,9 +16,16 @@ export const SITE_DESCRIPTION =
 
 export const SITE_TAGLINE = "Luxury you can experience, not just purchase.";
 
-/** X / Twitter handle used for `twitter:site` and JSON-LD `sameAs`. */
+/**
+ * Profile URLs for JSON-LD `sameAs`. Absolute URLs, not handles — `sameAs` is
+ * an identity claim a search engine resolves, so a bare `@name` is useless and
+ * a wrong URL is worse than none. Empty means "not on that network".
+ *
+ * The Instagram URL is re-exported from `./contact` so the handle is declared
+ * once; everything else about the account lives there too.
+ */
 export const SOCIAL_X = "";
-export const SOCIAL_INSTAGRAM = "";
+export { INSTAGRAM_URL as SOCIAL_INSTAGRAM } from "./contact";
 
 /* ── Colour ──────────────────────────────────────────────────────────────
    Literals for the places CSS custom properties cannot reach. Today that is

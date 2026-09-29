@@ -24,9 +24,21 @@
     </a>
 
     <div class="contact__details">
-      <ContentDetailRow label="Phone" :value="CONCIERGE.phone" />
-      <ContentDetailRow label="Email" :value="CONCIERGE.email" />
-      <ContentDetailRow label="Instagram" :value="CONCIERGE.instagram" />
+      <ContentDetailRow
+        label="Phone"
+        :value="CONCIERGE.phone"
+        :href="`tel:+${settings.whatsapp}`"
+      />
+      <ContentDetailRow
+        label="Email"
+        :value="CONCIERGE.email"
+        :href="`mailto:${CONCIERGE.email}`"
+      />
+      <ContentDetailRow
+        label="Instagram"
+        :value="CONCIERGE.instagram"
+        :href="INSTAGRAM_URL"
+      />
       <ContentDetailRow label="Private viewings" :value="CONCIERGE.viewings" />
     </div>
 
@@ -70,24 +82,34 @@
 /**
  * The concierge page: WhatsApp first, then the facts, then a form.
  *
- * TODO(launch): every contact detail below is the design prototype's
- * placeholder. The real number, address and handle belong in `site_settings`
- * (admin → settings, Phase E) — `SOCIAL_INSTAGRAM` in
- * app/utils/constants/brand.ts is still an empty string on purpose. Replace
- * all five before go-live; do not ship a fake number as if it dialled.
+ * The number, email and handle are the vendor's real ones and live in
+ * app/utils/constants/contact.ts — read that file before changing any of them,
+ * particularly the note on why `hello@jewelrybox.ng` is not shown here.
+ *
+ * TODO(launch): the two details below that are still the prototype's invention
+ * are the concierge hours in the header eyebrow and the viewings line. Confirm
+ * both with the vendor; `terms.vue` also claims Lekki, Lagos.
  */
-const CONCIERGE = {
-  phone: "+234 800 000 0000",
-  /** Digits only, no `+` — what wa.me expects. */
-  whatsapp: "2348000000000",
-  email: "hello@jewelrybox.ng",
-  instagram: "@jewelrybox.ng",
-  viewings: "Lekki, Lagos · by appointment",
-} as const;
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "~/utils/constants/contact";
 
-const whatsappUrl = `https://wa.me/${CONCIERGE.whatsapp}?text=${encodeURIComponent(
-  "Hello JewelryBox — I would like to speak with a specialist.",
-)}`;
+/**
+ * Phone and email come from `site_settings` so the vendor can change a number
+ * without a deploy. Instagram does not: the footer and the JSON-LD `sameAs`
+ * read `INSTAGRAM_URL` directly, and three surfaces disagreeing about which
+ * account is the house is worse than needing a deploy to move networks.
+ */
+const { settings, whatsappUrl: buildWhatsappUrl } = useSiteSettings();
+
+const CONCIERGE = computed(() => ({
+  phone: settings.value.contact.phone,
+  email: settings.value.contact.email,
+  instagram: `@${INSTAGRAM_HANDLE}`,
+  viewings: "Lekki, Lagos · by appointment",
+}));
+
+const whatsappUrl = computed(() =>
+  buildWhatsappUrl("Hello JewelryBox — I would like to speak with a specialist."),
+);
 
 const form = ref({ name: "", email: "", message: "" });
 const formValid = ref(false);

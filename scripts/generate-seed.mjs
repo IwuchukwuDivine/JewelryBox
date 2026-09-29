@@ -160,10 +160,18 @@ out.push(`
 -- RPC after an order exists, as PAYMENT_METHODS.bank_transfer.description
 -- promises. Placeholders: set the real values in /admin/settings.
 insert into public.site_settings (key, value, is_public) values
+  -- STILL A PLACEHOLDER: the real account has not been supplied. Set it in
+  -- /admin/settings before taking a bank transfer, or the confirmation email
+  -- tells the customer to pay into nothing.
   ('bank_account', '{"bank_name":"Bank name","account_number":"0000000000","account_name":"JewelryBox"}'::jsonb, false),
-  ('vendor_email', '"orders@jewelrybox.ng"'::jsonb, false),
-  ('contact',      '{"email":"hello@jewelrybox.ng","phone":"+234 000 000 0000"}'::jsonb, true),
-  ('whatsapp',     '"+2340000000000"'::jsonb, true)
+  ('vendor_email', '"hello.jewelryboxng@gmail.com"'::jsonb, false),
+  ('contact',      '{"email":"hello.jewelryboxng@gmail.com","phone":"+234 813 623 2942"}'::jsonb, true),
+  -- E.164 digits only — no '+', no spaces. \`wa.me/<number>\` breaks on a space,
+  -- and PublicSettings.whatsapp declares exactly this shape, so the seed matches
+  -- the contract rather than the way a human writes a phone number. The display
+  -- form lives in \`contact.phone\`.
+  ('whatsapp',     '"2348136232942"'::jsonb, true),
+  ('instagram',    '"https://www.instagram.com/stonegallery001"'::jsonb, true)
 on conflict (key) do nothing;`);
 
 /* ── first admin ──────────────────────────────────────────────────────── */
@@ -189,9 +197,16 @@ begin
 end;
 $$;`);
 
-writeFileSync(`${ROOT}/supabase/seed.sql`, out.join("\n") + "\n");
+const sql = out.join("\n") + "\n";
+// Derived, not hardcoded: a literal here went stale the first time a setting was
+// added, and a summary line that lies is worse than no summary line.
+const settingsCount = (
+  sql.match(/^\s*(--.*\n\s*)*\('(bank_account|vendor_email|contact|whatsapp|instagram)'/gm) ?? []
+).length;
+
+writeFileSync(`${ROOT}/supabase/seed.sql`, sql);
 console.log(
   `supabase/seed.sql written — ${MOCK_PRODUCTS.length} products, ${variants.length} variants, ` +
     `${MOCK_RATES.length} rates (${dispatch.length} dispatch / ${flight.length} flight), ` +
-    `${MOCK_ANNOUNCEMENTS.length} announcement(s), 4 settings.`,
+    `${MOCK_ANNOUNCEMENTS.length} announcement(s), ${settingsCount} settings.`,
 );

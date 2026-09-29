@@ -93,6 +93,17 @@ const BANK = {
   account_name: "JewelryBox Limited",
 } as const;
 
+/*
+ * A silent placeholder here tells a real customer to pay a real amount into an
+ * account that does not exist, so it announces itself in development. Remove
+ * this guard together with the constants above.
+ */
+if (import.meta.dev && BANK.account_number === "0000000000") {
+  console.warn(
+    "[BankTransferCard] placeholder bank account is still in the code — a customer would be told to pay into 0000000000.",
+  );
+}
+
 const unpriced = computed(() => props.order.delivery_fee_ngn === null);
 
 /**

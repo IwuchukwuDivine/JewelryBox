@@ -5,8 +5,8 @@
     :class="{ 'c-row--static': !interactive }"
     :to="to || undefined"
     :href="href || undefined"
-    :target="href ? '_blank' : undefined"
-    :rel="href ? 'noopener' : undefined"
+    :target="external ? '_blank' : undefined"
+    :rel="external ? 'noopener' : undefined"
   >
     <span class="c-row__label">{{ label }}</span>
     <span class="c-row__value">
@@ -22,6 +22,9 @@
  * Static by default: the contact details are facts to read, not links to
  * follow. Pass `to` or `href` when a row really does go somewhere, and it
  * becomes a link with the `.list-row` hover.
+ *
+ * Only an http(s) `href` opens in a new tab. `tel:` and `mailto:` hand off to
+ * another application and must not, or the browser is left on a blank tab.
  */
 const props = withDefaults(
   defineProps<{
@@ -36,6 +39,8 @@ const props = withDefaults(
 );
 
 const interactive = computed(() => Boolean(props.to || props.href));
+
+const external = computed(() => /^https?:/i.test(props.href));
 
 const tag = computed(() => {
   if (props.to) return resolveComponent("NuxtLink");

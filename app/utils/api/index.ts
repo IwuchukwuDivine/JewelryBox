@@ -18,6 +18,7 @@ export * from "./products";
 export * from "./wishlist";
 export * from "./delivery";
 export * from "./orders";
+export * from "./settings";
 export * from "./announcements";
 export * from "./auth";
 export * from "./addresses";

@@ -164,6 +164,60 @@ export interface AddressRepository {
   setDefault(id: string): Promise<void>;
 }
 
+/* ── Site settings ───────────────────────────────────────────────────── */
+
+/**
+ * The settings a signed-out visitor may read — the `is_public` rows of
+ * `site_settings`. Everything else in that table (the bank account, the vendor
+ * address) is admin-only and reached through `AdminSettingsRepository`.
+ *
+ * The bank account is deliberately absent. It stays behind
+ * `get_payment_instructions(order_id, email)`, because holding an order is what
+ * buys the account number; putting it here would hand it to anyone.
+ *
+ * No field is optional. The repository merges what the database returns over
+ * the compile-time defaults in `constants/contact.ts`, so those stay the floor
+ * and never become a second source of truth — a page cannot lose its phone
+ * number because a row was emptied in admin.
+ */
+export interface PublicSettings {
+  contact: {
+    email: string;
+    /** Human form, for display and a `tel:` link. Never empty. */
+    phone: string;
+  };
+  /** E.164 with no punctuation and no `+`, ready for a `wa.me` link. Never empty. */
+  whatsapp: string;
+  /**
+   * Absolute profile URL, or `""` for "not published".
+   *
+   * This is the one field where empty is a value rather than a fault: a house
+   * may genuinely leave a network. So the fallback applies to a *missing or
+   * malformed* row, not to a deliberately blanked one — which means every
+   * consumer must handle `""`. `organizationSchema()` already does, via
+   * `.filter(Boolean)`; a bare `@handle` would be a malformed row and get
+   * replaced, because `sameAs` needs a URL a crawler can resolve.
+   */
+  instagram: string;
+}
+
+export interface SettingsRepository {
+  /**
+   * Every public setting in one read.
+   *
+   * One call rather than `get(key)` three times: three round trips to render a
+   * footer is silly, and an untyped `get<T>(key)` is an unchecked assertion —
+   * the caller declares the shape and nothing verifies it. Tolerable in an
+   * admin form that wrote the value itself; not something a public surface
+   * should rest on. An aggregate can be validated once, here.
+   *
+   * Never throws and never returns a partial. A failed request, a missing row
+   * or a malformed value all resolve to the compile-time default for that
+   * field, so the caller has no error branch to write.
+   */
+  publicSettings(): Promise<PublicSettings>;
+}
+
 /* ── Admin ───────────────────────────────────────────────────────────── */
 
 export interface AdminProductsRepository {

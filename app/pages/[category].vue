@@ -162,15 +162,13 @@ const currentPage = computed(() => data.value?.page ?? filters.value.page ?? 1);
  * The constant stays as it is; this call site uses the same pool the home
  * page's category tiles use, and swaps back at Phase F.
  *
- * A collection borrows the pool of its lead category; the two tag-driven
- * collections (moissanite, gifts) have no lead, so they take an editorial
- * frame instead.
+ * Both `CategoryDefinition` and `CollectionDefinition` carry a `heroImage`
+ * pointing at the vendor's own photography in `public/jewelries/`, so this is
+ * simply whichever one the slug resolved to.
  */
-const heroSrc = computed(() => {
-  const lead = category.value?.value ?? collection.value?.categories[0];
-  const pool = lead ? PHOTOS[lead] : PHOTOS.editorial;
-  return mockImage(pool[0]!, 1600);
-});
+const heroSrc = computed(
+  () => collection.value?.heroImage ?? category.value?.heroImage ?? "",
+);
 
 /* ── Writing filters back to the route ────────────────────────────────── */
 

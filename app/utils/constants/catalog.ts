@@ -40,7 +40,7 @@ export const PRODUCT_CATEGORIES: readonly CategoryDefinition[] = [
     description:
       "Automatic and quartz wristwatches, certified and insured in transit. Delivered across Nigeria in 1–3 working days.",
     headline: "Chosen for the wrist.",
-    heroImage: "/images/categories/watches.jpg",
+    heroImage: "/jewelries/watches.jpg",
   },
   {
     value: "rings",
@@ -50,7 +50,7 @@ export const PRODUCT_CATEGORIES: readonly CategoryDefinition[] = [
     description:
       "Engagement rings, bands and moissanite solitaires in 14k gold. Sized to order, certified, insured in transit.",
     headline: "Worn every day, for good.",
-    heroImage: "/images/categories/rings.jpg",
+    heroImage: "/jewelries/rings.jpg",
   },
   {
     value: "necklaces",
@@ -60,7 +60,7 @@ export const PRODUCT_CATEGORIES: readonly CategoryDefinition[] = [
     description:
       "Pendants, tennis chains and everyday necklaces in gold and moissanite. Certified and insured in transit.",
     headline: "Close to the skin.",
-    heroImage: "/images/categories/necklaces.jpg",
+    heroImage: "/jewelries/necklaces.jpg",
   },
   {
     value: "earrings",
@@ -70,7 +70,7 @@ export const PRODUCT_CATEGORIES: readonly CategoryDefinition[] = [
     description:
       "Studs, hoops and drops in 14k gold and moissanite. Certified, insured, delivered across Nigeria.",
     headline: "The quietest statement.",
-    heroImage: "/images/categories/earrings.jpg",
+    heroImage: "/jewelries/earrings.jpg",
   },
   {
     value: "bracelets",
@@ -80,7 +80,7 @@ export const PRODUCT_CATEGORIES: readonly CategoryDefinition[] = [
     description:
       "Tennis bracelets, cuffs and bangles in gold and moissanite. Certified and insured in transit.",
     headline: "Weight you notice.",
-    heroImage: "/images/categories/bracelets.jpg",
+    heroImage: "/jewelries/bracelets.jpg",
   },
 ] as const;
 
@@ -93,6 +93,8 @@ export interface CollectionDefinition {
   categories: ProductCategory[];
   /** Additional tag every piece must carry. */
   tag?: ProductTag;
+  /** Vendor photography for the collection hero. Lives in `public/jewelries/`. */
+  heroImage: string;
 }
 
 /** The four header entries. */
@@ -103,6 +105,7 @@ export const COLLECTIONS: readonly CollectionDefinition[] = [
     headline: "Chosen for the wrist.",
     description:
       "Automatic and quartz wristwatches, certified and insured in transit.",
+    heroImage: "/jewelries/watches.jpg",
     categories: ["watches"],
   },
   {
@@ -111,6 +114,7 @@ export const COLLECTIONS: readonly CollectionDefinition[] = [
     headline: "Built for people who keep what they buy.",
     description:
       "Rings, necklaces, earrings and bracelets in 14k gold and moissanite.",
+    heroImage: "/jewelries/jewelry.jpg",
     categories: ["rings", "necklaces", "earrings", "bracelets"],
   },
   {
@@ -119,6 +123,7 @@ export const COLLECTIONS: readonly CollectionDefinition[] = [
     headline: "More fire than diamond. Chosen on purpose.",
     description:
       "Moissanite graded on the same colour scale as diamond, with more brilliance and more fire.",
+    heroImage: "/jewelries/moissanite.jpg",
     categories: [],
     tag: "moissanite",
   },
@@ -128,6 +133,7 @@ export const COLLECTIONS: readonly CollectionDefinition[] = [
     headline: "Keep the pieces you love close.",
     description:
       "Pieces chosen to be given — boxed, sealed and certified, delivered across Nigeria.",
+    heroImage: "/jewelries/gifts.jpg",
     categories: [],
     tag: "gift",
   },

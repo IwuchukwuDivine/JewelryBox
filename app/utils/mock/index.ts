@@ -5,7 +5,9 @@ import type {
   DeliveryRepository,
   OrdersRepository,
   ProductsRepository,
+  PublicSettings,
   SessionUser,
+  SettingsRepository,
   WishlistRepository,
 } from "~/utils/types/api";
 import type {
@@ -26,6 +28,7 @@ import { MOCK_RATES } from "~/utils/mock/rates";
 import { MOCK_ORDERS } from "~/utils/mock/orders";
 import { MOCK_ANNOUNCEMENTS } from "~/utils/mock/announcements";
 import { MOCK_ADDRESSES, MOCK_PASSWORD, MOCK_USER } from "~/utils/mock/user";
+import { PUBLIC_SETTINGS_FALLBACK } from "~/utils/constants/contact";
 
 /**
  * Mock implementations of every repository in `types/api.ts`.
@@ -770,5 +773,62 @@ export const mockAddressRepo: AddressRepository = {
   async setDefault(id: string) {
     addresses = addresses.map((a) => ({ ...a, is_default: a.id === id }));
     await settle(null);
+  },
+};
+
+/* ── Site settings ────────────────────────────────────────────────────── */
+
+const SETTINGS_KEY = "jb-mock-settings";
+
+/**
+ * Stands in for the `is_public` rows of `site_settings`. Nothing writes it —
+ * the admin surface is Phase D — so to exercise the override path by hand:
+ *
+ *   localStorage.setItem("jb-mock-settings",
+ *     JSON.stringify({ whatsapp: "2349000000000" }));
+ *
+ * A partial object is the realistic shape, since each setting is its own row.
+ */
+const readSettingsOverride = (): Partial<PublicSettings> => {
+  if (!import.meta.client) return {};
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    return raw ? (JSON.parse(raw) as Partial<PublicSettings>) : {};
+  } catch {
+    return {};
+  }
+};
+
+/** A row is usable only if it is a non-empty string. */
+const str = (value: unknown, fallback: string): string =>
+  typeof value === "string" && value.trim() ? value.trim() : fallback;
+
+export const mockSettingsRepo: SettingsRepository = {
+  async publicSettings() {
+    const fallback = PUBLIC_SETTINGS_FALLBACK;
+
+    // `settle` can throw when `failureRate` is turned up. The contract says
+    // this method never does, so the simulated failure has to be absorbed here
+    // — it is the same shape as a real request failing, and the caller still
+    // gets a complete object.
+    const stored = await settle(readSettingsOverride()).catch(
+      (): Partial<PublicSettings> => ({}),
+    );
+
+    return {
+      contact: {
+        email: str(stored.contact?.email, fallback.contact.email),
+        phone: str(stored.contact?.phone, fallback.contact.phone),
+      },
+      whatsapp: str(stored.whatsapp, fallback.whatsapp),
+      // Empty is a value here — "not published" — so only a *missing* or
+      // non-URL row falls back. See `PublicSettings.instagram`.
+      instagram:
+        stored.instagram === ""
+          ? ""
+          : /^https?:\/\//i.test(String(stored.instagram ?? ""))
+            ? String(stored.instagram).trim()
+            : fallback.instagram,
+    };
   },
 };

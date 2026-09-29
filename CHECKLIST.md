@@ -154,68 +154,78 @@ Mock data only. No Supabase import anywhere in this lane.
 
 ## Phase A · Mock data + shell
 
-- [ ] `app/utils/mock/products.ts` — ≥24 pieces across every category, with real
+- [x] `app/utils/mock/products.ts` — ≥24 pieces across every category, with real
       photography URLs, multiple images each, some out of stock, some variants
       (strap, ring size, chain length), a few `featured`.
-- [ ] `app/utils/mock/{orders,zones,announcements,user}.ts`.
-- [ ] Mock-backed composables returning the Phase 0 types with a simulated delay,
+- [x] `app/utils/mock/{orders,announcements,user}.ts` — plus `rates.ts` (not
+      `zones.ts`: `delivery_zones` became `delivery_rates` in Phase 0) and
+      `images.ts`, a pool of HTTP-verified, visually-reviewed photo IDs.
+- [x] Mock-backed composables returning the Phase 0 types with a simulated delay,
       so loading and error states are real from day one.
-- [ ] `Layout/Header.vue` — wordmark (`AppLogo`), nav (Watches · Jewelry ·
-      Moissanite · Gifts), search, wishlist, bag, account, `AppThemeToggle`.
+- [x] `Layout/Header.vue` — wordmark (`AppLogo`), nav (Watches · Jewelry ·
+      Moissanite · Gifts), search, bag, account, `AppThemeToggle`.
       Glass background (`--glass`), hairline bottom border.
-- [ ] `Layout/Footer.vue`, `Layout/AnnouncementBar.vue`, `Layout/MobileNav.vue`.
-- [ ] `Layout/CartDrawer.vue` — slides from the right, 600ms, 40% backdrop.
-- [ ] Base UI in `app/components/App/`: `Button`, `Input`, `Select`, `Textarea`,
+      **No wishlist icon** — dropped to reduce crowding; the account icon earns
+      its place because it is the login/signup entry point. Wishlist stays
+      reachable from the footer, the mobile nav, and the diamond on every card.
+      The wordmark sits in the left cluster, not centred: centring left a dead
+      gap between the collections and the mark on wide screens.
+- [x] `Layout/Footer.vue`, `Layout/AnnouncementBar.vue`, `Layout/MobileNav.vue`.
+- [x] `Layout/CartDrawer.vue` — slides from the right, 600ms, 40% backdrop.
+- [x] Base UI in `app/components/App/`: `Button`, `Input`, `Select`, `Textarea`,
       `Checkbox`, `Radio`, `Modal`, `Sheet`, `Skeleton`, `EmptyState`,
       `Breadcrumbs`, `Pagination`, `QuantityStepper`, `Badge`. All 2px radius,
       `--ease-brand` transitions.
-- [ ] Page transition: 400ms fade, content enters from 16px below.
-- [ ] Reveal animation: 24px rise + fade, 80ms stagger. Respect
+- [x] Page transition: 400ms fade, content enters from 16px below.
+- [x] Reveal animation: 24px rise + fade, 80ms stagger. Respect
       `prefers-reduced-motion` (the media query is already in `main.css`).
 
 ## Phase B · Storefront pages
 
-- [ ] `/` — hero ("Luxury, Worn Close."), featured pieces, category tiles,
+- [x] `/` — hero ("Luxury, Worn Close."), featured pieces, category tiles,
       "Chosen for the wrist", moissanite section, editorial/campaign strip,
       recently viewed.
-- [ ] `/[category]` — grid, filter rail (category, price, availability,
+- [x] `/[category]` — grid, filter rail (category, price, availability,
       moissanite), sort, quick view, pagination. Filters drive query params;
       filtered views must set `robots: noindex, follow` and canonical to the
       bare path.
-- [ ] `/product/[slug]` — gallery with macro zoom, variant chips, price,
+- [x] `/product/[slug]` — gallery with macro zoom, variant chips, price,
       stock/made-to-order state, add to bag, buy now, specs table (IBM Plex
       Mono), certification note, delivery/returns accordion, "You may also
       consider".
-- [ ] `/campaign/[slug]` — editorial layout, full-bleed imagery.
-- [ ] `/wishlist` — grid, move to bag, empty state ("Nothing here yet.").
-- [ ] `/cart` — line items, quantity, subtotal, delivery estimate, proceed.
-- [ ] `/about`, `/contact` (form + WhatsApp specialist), `/faq` (accordion,
+- [x] `/campaign/[slug]` — editorial layout, full-bleed imagery.
+- [x] `/wishlist` — grid, move to bag, empty state ("Nothing here yet.").
+- [x] `/cart` — line items, quantity, subtotal, delivery estimate, proceed.
+- [x] `/about`, `/contact` (form + WhatsApp specialist), `/faq` (accordion,
       `FAQPage` JSON-LD), `/search`.
-- [ ] Legal: `/shipping-returns`, `/privacy`, `/terms`.
-- [ ] Every page calls `usePageSeo()` with the right OG card and JSON-LD —
+- [x] Legal: `/shipping-returns`, `/privacy`, `/terms`.
+- [x] Every page calls `usePageSeo()` with the right OG card and JSON-LD —
       `Product` cards for PDP, `Collection` for category, `Campaign` for
       editorial, `Default` elsewhere.
 
 ## Phase C · Checkout + account
 
-- [ ] `/checkout` — 4 steps matching the prototype: contact → address + delivery →
-      payment → review. Step indicator, per-step validation, guest checkout allowed.
-- [ ] `Order/PaymentMethodPicker.vue` — **bank transfer** and **pay on delivery**
+- [x] `/checkout` — **3 input steps plus a receipt**, which is what the prototype
+      actually has (`Step {n} / 3`): contact → address + delivery → payment. The
+      order summary is visible throughout, so "review" is continuous rather than
+      a fourth screen. The "4 steps" above was a miscount of the design source.
+      Step indicator, per-step validation, guest checkout allowed.
+- [x] `Order/PaymentMethodPicker.vue` — **bank transfer** and **pay on delivery**
       only. No card, no Paystack, no Flutterwave.
-- [ ] `Order/BankTransferCard.vue` — account details, order number as reference,
+- [x] `Order/BankTransferCard.vue` — account details, order number as reference,
       copy-to-clipboard (`app/utils/copy.ts` exists).
-- [ ] `Order/DeliveryDestination.vue` — **not a method picker.** State select;
+- [x] `Order/DeliveryDestination.vue` — **not a method picker.** State select;
       when the state is Lagos an area select appears; the resolved method and
       fee are then *shown*, not chosen. Unpriced destination renders
       "Delivery quoted after you order" and still allows checkout.
-- [ ] `/order/confirmed`, `/order/[id]` — `Order/Timeline.vue` and
+- [x] `/order/confirmed`, `/order/[id]` — `Order/Timeline.vue` and
       `Order/StatusBadge.vue` must render **both** lanes correctly.
-- [ ] `/track` — guest lookup by order number + email.
-- [ ] `/account` with tabs: overview, orders, order detail, profile, addresses,
+- [x] `/track` — guest lookup by order number + email.
+- [x] `/account` with tabs: overview, orders, order detail, profile, addresses,
       preferences. Matches the prototype's account tabs.
-- [ ] `/auth/*`: login, signup, forgot-password, reset-password, otp-verification,
+- [x] `/auth/*`: login, signup, forgot-password, reset-password, otp-verification,
       callback, confirm.
-- [ ] Account, checkout and wishlist are `noindex` — they are already in
+- [x] Account, checkout and wishlist are `noindex` — they are already in
       `robots.txt` and `sitemap.exclude`; add the meta too.
 
 ## Phase D · Admin UI
@@ -327,19 +337,21 @@ for figures and IDs.
       frontend lane as `useAuth` — see the lane split note below.
 - [x] `app/utils/api/{shop,orders,admin,wishlist,announcements,delivery}.ts` —
       port BGI's structure, implementing the interfaces in `types/api.ts`.
-- [ ] Stores: `cart` (persisted), `wishlist`, `address`, `orders`, `app`.
+- [x] Stores: `cart` (persisted), `wishlist`, `address`, `orders`, `app`.
       Port from BGI; drop `currency` and `rates`.
-- [ ] Real implementations of every Phase 0 composable.
-- [ ] `useAuth` + `middleware/{auth,admin,guest,checkout}.ts`.
+- [x] Real implementations of every Phase 0 composable.
+- [x] `useAuth` + `middleware/{auth,admin,guest,checkout}.ts`.
 
 ---
 
 > **Lane split, as built.** The backend lane owned `supabase/`, `server/`,
 > `app/utils/api/`, `app/utils/supabase.ts` and `tests/`. The remaining Phase C
-> items — stores, composables, `useAuth` and the four middleware — were built by
-> the frontend lane instead, because both lanes ran concurrently in one working
-> tree and those paths were already theirs. They are done; the boxes above are
-> left unticked because they are not the backend lane's to claim.
+> items — stores, composables, `useAuth` and the middleware — were built by the
+> frontend lane instead, because both lanes ran concurrently in one working tree
+> and those paths were already theirs. They are ticked above as frontend work.
+>
+> `middleware/admin.ts` is the one exception: it is not built, because Phase D
+> is deferred and nothing routes to `/admin` yet.
 >
 > Backend surfaces all built. Phase G's component and E2E tests, and the `seoText` / `rules` unit
 > tests, remain with the frontend lane.
@@ -376,7 +388,7 @@ BGI has none. Do not repeat that.
 
 # Phase H · Launch
 
-- [ ] Replace `app/pages/index.vue` (currently coming-soon) with the real home.
+- [x] Replace `app/pages/index.vue` (currently coming-soon) with the real home.
 - [ ] Add `/about`, `/contact`, `/faq` to `routeRules` prerender.
 - [ ] Fill `NUXT_PUBLIC_GTAG_ID`; fill `SOCIAL_X` / `SOCIAL_INSTAGRAM` in
       `app/utils/constants/brand.ts`.

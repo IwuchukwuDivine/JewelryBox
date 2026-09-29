@@ -4,7 +4,13 @@
       <div class="footer__top">
         <AppLogo variant="monogram" size="36px" :to="undefined" />
         <p class="mono-meta footer__place">
-          {{ SITE_DOMAIN.toUpperCase() }}<br >LAGOS · {{ year }}
+          {{ SITE_DOMAIN.toUpperCase() }}<br >LAGOS · {{ year }}<br >
+          <a
+            class="footer__social"
+            :href="INSTAGRAM_URL"
+            target="_blank"
+            rel="noopener"
+          >@{{ INSTAGRAM_HANDLE }}</a>
         </p>
       </div>
 
@@ -29,6 +35,7 @@
 
 <script setup lang="ts">
 import { SITE_DOMAIN, SITE_NAME } from "~/utils/constants/brand";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "~/utils/constants/contact";
 
 const year = new Date().getFullYear();
 
@@ -93,6 +100,16 @@ const COLUMNS = [
 .footer__place {
   text-align: right;
   line-height: 1.7;
+}
+
+.footer__social {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--dur-hover) var(--ease-brand);
+}
+
+.footer__social:hover {
+  color: var(--text-primary);
 }
 
 .footer__grid {

@@ -1195,7 +1195,13 @@ const cancelledVendor = (
  * `order_emails` already records. `siteUrl` is required — pass
  * `useRuntimeConfig().public.siteUrl`; trailing slashes are trimmed for you.
  */
-export const buildOrderEmails = (
+/**
+ * Both payloads for one event: `[customer, vendor]`, always in that order.
+ *
+ * Wrapped by `buildOrderEmails` below, which is what callers use — it sets the
+ * customer's reply-to centrally rather than in each of the six templates.
+ */
+const buildPair = (
   order: Order,
   kind: OrderEmailKind,
   bank: BankDetails,
@@ -1236,3 +1242,27 @@ export const buildOrderEmails = (
       ];
   }
 };
+
+/**
+ * The public builder.
+ *
+ * Sets the customer payload's reply-to to the vendor address, which matters more
+ * than it looks: `FROM_EMAIL` is on the sending domain, and a domain verified
+ * with Resend is verified for *sending* — it has no MX records and receives
+ * nothing. Without a reply-to, a customer who hits Reply on their order
+ * confirmation writes into a void. The vendor address is a real inbox, so that
+ * is where a reply should land.
+ *
+ * The vendor payload keeps its own reply-to, set to the customer, so answering a
+ * "new order" notification reaches the buyer directly.
+ */
+export const buildOrderEmails = (
+  order: Order,
+  kind: OrderEmailKind,
+  bank: BankDetails,
+  vendorEmail: string,
+  siteUrl: string,
+): EmailPayload[] =>
+  buildPair(order, kind, bank, vendorEmail, siteUrl).map((payload, i) =>
+    i === 0 && !payload.replyTo ? { ...payload, replyTo: vendorEmail } : payload,
+  );
